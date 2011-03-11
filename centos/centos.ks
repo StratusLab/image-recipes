@@ -30,6 +30,7 @@ volgroup VolGroup00 --pesize=32768 pv.01
 logvol / --fstype ext3 --name=LogVol00 --vgname=VolGroup00 --size=1024 --grow
 
 %packages --nobase
+which
 etup
 basesystem
 rootfiles
