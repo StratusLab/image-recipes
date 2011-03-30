@@ -119,7 +119,7 @@ chmod 0755 /mnt/usr/bin/onecontext
 # Execute the contextualization at the end of the startup sequence.
 cat > /mnt/etc/rc.d/rc.startup/95.context <<EOF
 #!/bin/sh
-/usr/bin/onecontext
+. /usr/bin/onecontext
 EOF
 chmod 0755 /mnt/etc/rc.d/rc.startup/95.context
 

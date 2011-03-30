@@ -315,7 +315,7 @@ cat >> /etc/rc.d/rc.local <<'EOG'
 dd if=/dev/urandom count=50|md5sum|passwd --stdin root
 
 # Contextualization
-/usr/bin/onecontext
+. /usr/bin/onecontext
 EOG
 
 cat > /usr/bin/onecontext <<'EOG'
