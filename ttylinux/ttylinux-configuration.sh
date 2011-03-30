@@ -109,7 +109,6 @@ fi
   
 umount /mnt
   
-exit 0
 EOF
 
 # Make sure to change the permissions for the script so

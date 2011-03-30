@@ -326,13 +326,11 @@ cat > /usr/bin/onecontext <<'EOG'
 mount -t iso9660 /dev/$DEVICE /mnt
   
 if [ -f /mnt/context.sh ]; then
-  /mnt/init.sh
+  . /mnt/init.sh
 fi
   
 umount /mnt
   
-exit 0
-
 EOG
 
 chmod 0755 /usr/bin/onecontext 
