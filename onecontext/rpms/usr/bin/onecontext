@@ -1,0 +1,13 @@
+#!/bin/sh -e
+  
+[ -e /dev/hdd ] && DEVICE=hdd || DEVICE=sr0
+  
+mount -t iso9660 /dev/$DEVICE /mnt/stratuslab
+  
+if [ -f /mnt/stratuslab/context.sh ]; then
+  . /mnt/stratuslab/init.sh
+fi
+
+umount /mnt/stratuslab
+  
+exit 0
