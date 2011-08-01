@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>eu.stratuslab.onecontext</groupId>
+  <artifactId>onecontext</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>StratusLab Contextualization (RPM)</name>
+
+  <packaging>rpm</packaging>
+
+  <!-- NOTE: This project MUST have same version as proxy module. -->
+  <properties>
+    <bin.dir>/usr/bin</bin.dir>
+    <init.d.dir>/etc/init.d</init.d.dir>
+ 
+    <authn-proxy-war>authn-one-proxy-war-${project.version}.war</authn-proxy-war>
+    <maven.build.timestamp.format>yyyyMMdd.HHmmss</maven.build.timestamp.format>
+    <RELEASE>0.${maven.build.timestamp}</RELEASE>
+  </properties>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>rpm-maven-plugin</artifactId>
+	<extensions>true</extensions>
+	<configuration>
+	  <release>${RELEASE}</release>
+	  <summary>StratusLab Contextualization</summary>
+	  <name>stratuslab-one-context</name>
+	  <group>System</group>
+	  <vendor>StratusLab</vendor>
+	  <packager>StratusLab</packager>
+	  <copyright>Apache</copyright>
+	  <url>http://stratuslab.eu/</url>
+	  <needarch>noarch</needarch>
+	  <description>
+	    Package containing files for StratusLab virtual machine contextualization.
+	  </description>
+
+          <preremoveScriptlet>
+            <script>
+if [ $1 -eq 0 ]
+then
+  /sbin/chkconfig --del onecontext
+fi
+</script>
+          </preremoveScriptlet>
+
+          <postinstallScriptlet>
+            <script>
+/sbin/chkconfig --add onecontext
+/bin/mkdir -p /mnt/stratuslab
+</script>
+          </postinstallScriptlet>
+
+	  <mappings>
+
+	    <mapping>
+	      <directory>${bin.dir}</directory>
+	      <filemode>755</filemode>
+	      <username>root</username>
+	      <groupname>root</groupname>
+	      <directoryIncluded>false</directoryIncluded>
+	      <sources>
+		<source>
+		  <location>${basedir}/src/main/scripts/bin</location>
+		</source>
+	      </sources>
+	    </mapping>
+
+	    <mapping>
+	      <directory>${init.d.dir}</directory>
+	      <filemode>755</filemode>
+	      <username>root</username>
+	      <groupname>root</groupname>
+	      <directoryIncluded>false</directoryIncluded>
+	      <sources>
+		<source>
+		  <location>src/main/scripts/init.d</location>
+		</source>
+	      </sources>
+	    </mapping>
+
+	  </mappings>
+	</configuration>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>
