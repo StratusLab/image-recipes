@@ -8,6 +8,13 @@
 
   <packaging>rpm</packaging>
 
+  <parent>
+    <groupId>eu.stratuslab.image</groupId>
+    <artifactId>image-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  
+
   <!-- NOTE: This project MUST have same version as proxy module. -->
   <properties>
     <bin.dir>/usr/bin</bin.dir>
