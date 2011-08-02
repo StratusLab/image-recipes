@@ -2,4 +2,4 @@
 # If enable is yes, the run_exec script will be launch
 enable=no
 # run_exec define the command line to run @startup
-run_exec=/usr/bin/quattorcontext
+run_exec=/usr/bin/stratuslab-quattor-context

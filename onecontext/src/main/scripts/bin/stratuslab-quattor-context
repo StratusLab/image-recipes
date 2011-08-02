@@ -1,0 +1,41 @@
+#!/bin/sh
+
+echo "#"`date` > /var/log/quattorcontext.log
+
+if [ "x$IPSERVICE" != "x" ]
+then
+  echo "## Network Configuration ##" >> /var/log/quattorcontext.log
+  if [ "x$NETMASKSERVICE" != "x" ]
+  then
+    NETMASKSERVICECMD="netmask $NETMASKSERVICE"
+  fi
+  if [ "x$GWSERVICE" != "x" ]
+  then
+   current_gw=`/sbin/route -n |grep 'UG' | awk '{print $2}'`
+   /sbin/route del default gw $current_gw  >> /var/log/quattorcontext.log
+   /sbin/route add default gw $GWSERVICE  >> /var/log/quattorcontext.log
+   echo "GATEWAY="$GWSERVICE >> /etc/sysconfig/network
+  fi
+  /sbin/ifconfig eth0:1 $IPSERVICE $NETMASKSERVICECMD >> /var/log/quattorcontext.log
+
+  echo "DEVICE=eth0:1" > /etc/sysconfig/network-scripts/ifcfg-eth0:1
+  echo "IPADDR="$IPSERVICE >> /etc/sysconfig/network-scripts/ifcfg-eth0:1
+  echo "NETMASK="$NETMASKSERVICE >> /etc/sysconfig/network-scripts/ifcfg-eth0:1
+fi
+
+
+if [ "x$QUATTORPROFILE" != "x" ]
+then
+  echo "## Quattor Configuration ##" >> /var/log/quattorcontext.log
+  echo "#"`date` > /etc/ccm.conf
+  echo "profile $QUATTORSERVER/$QUATTORPROFILE.xml" >> /etc/ccm.conf
+  echo "world_readable 0" >> /etc/ccm.conf
+
+  ulimit -n 4096
+  /bin/sleep 30
+  /usr/sbin/ccm-fetch -d >> /var/log/quattorcontext.log
+  /usr/sbin/ncm-ncd --configure --all >> /var/log/quattorcontext.log
+  /sbin/service ncm-cdispd restart >> /var/log/quattorcontext.log
+fi
+
+/sbin/reboot
