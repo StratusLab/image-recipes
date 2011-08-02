@@ -51,14 +51,14 @@
             <script>
 if [ $1 -eq 0 ]
 then
-  /sbin/chkconfig --del onecontext
+  /sbin/chkconfig --del stratuslab-one-context
 fi
 </script>
           </preremoveScriptlet>
 
           <postinstallScriptlet>
             <script>
-/sbin/chkconfig --add onecontext
+/sbin/chkconfig --add stratuslab-one-context
 /bin/mkdir -p /mnt/stratuslab
 </script>
           </postinstallScriptlet>
