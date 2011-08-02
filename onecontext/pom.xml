@@ -19,6 +19,7 @@
   <properties>
     <bin.dir>/usr/bin</bin.dir>
     <init.d.dir>/etc/init.d</init.d.dir>
+    <etc.dir>/etc</etc.dir>
  
     <maven.build.timestamp.format>yyyyMMdd.HHmmss</maven.build.timestamp.format>
     <RELEASE>0.${maven.build.timestamp}</RELEASE>
@@ -89,6 +90,21 @@ fi
 		</source>
 	      </sources>
 	    </mapping>
+
+            <mapping>
+              <directory>${etc.dir}</directory>
+              <filemode>644</filemode>
+              <username>root</username>
+              <groupname>root</groupname>
+              <directoryIncluded>false</directoryIncluded>
+              <configuration>noreplace</configuration>
+              <sources>
+                <source>
+                  <location>src/main/scripts/etc</location>
+                </source>
+              </sources>
+            </mapping>
+
 
 	  </mappings>
 	</configuration>

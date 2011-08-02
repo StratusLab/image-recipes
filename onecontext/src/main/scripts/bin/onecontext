@@ -1,12 +1,71 @@
 #!/bin/sh -e
-  
-[ -e /dev/hdd ] && DEVICE=hdd || DEVICE=sr0
-  
+
+############################
+# Some variable definition #
+############################
+configuration_file=/etc/stratuslab/stratuslab-one-context.cfg
+configuration_dir=/etc/stratuslab/conf.d
+external_context_run=""
+
+#################################################
+# Check if configuration file exist AND load it #
+#################################################
+if [ -f $configuration_file ]
+then
+ source $configuration_file
+fi
+
+###################################################
+# Check if contextualization device is accessible #
+###################################################
+if [ -n $context_device ]
+then  
+  if [ -e $context_device ]
+  then
+   DEVICE=$context_device
+  else
+   echo "Device $context_device does not exist"
+   exit -1
+  fi
+else
+  echo "No device defined for contextualization"
+  exit -2
+fi
+
+
+###############################################################################
+# Load all *.context file on configuration directory (/etc/stratuslab/conf.d) #
+###############################################################################
+if [ -d $configuration_dir ]
+then
+ context_files=`ls $configuration_dir/*.context`
+ for context_file in $context_files
+ do
+  source $context_file
+  if [ "x$enable" == "xyes" ]
+  then
+   external_context_run="$external_context_run ; $run_exec"
+  fi
+  run_exec=""
+  enable=""
+ done
+fi
+
+############################################################
+# Mount contextualization device and do the standard stuff #
+# from opennebula (mainly put the ssh keys on /root/.ssh)  #
+############################################################
 mount -t iso9660 /dev/$DEVICE /mnt/stratuslab
   
 if [ -f /mnt/stratuslab/context.sh ]; then
   . /mnt/stratuslab/init.sh
 fi
+
+################################################################
+# Run all contextualization script from /etc/stratuslab/conf.d #
+################################################################
+
+$external_context_run
 
 umount /mnt/stratuslab
   
