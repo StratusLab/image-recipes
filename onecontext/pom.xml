@@ -59,7 +59,7 @@ fi
           <postinstallScriptlet>
             <script>
 /sbin/chkconfig --add stratuslab-one-context
-/bin/mkdir -p /mnt/stratuslab
+/usr/bin/stratuslab-one-context-postinstall
 </script>
           </postinstallScriptlet>
 
