@@ -5,7 +5,9 @@
 ############################
 configuration_file=/etc/stratuslab/stratuslab-one-context.cfg
 configuration_dir=/etc/stratuslab/conf.d
-external_context_run="echo Start external script"
+external_context_run=/tmp/external_context_run
+
+echo "#!/bin/sh" > $external_context_run
 
 #################################################
 # Check if configuration file exist AND load it #
@@ -19,7 +21,7 @@ fi
 # Check if contextualization device is accessible #
 ###################################################
 if [ -n $context_device ]
-then  
+then
   if [ -e /dev/$context_device ]
   then
    DEVICE=$context_device
@@ -46,7 +48,7 @@ then
   then
    if [ "x$run_exec" != "x" ]
    then
-     external_context_run=$external_context_run ; $run_exec
+     echo ". "$run_exec >> $external_context_run
    fi
   fi
   run_exec=""
@@ -59,7 +61,7 @@ fi
 # from opennebula (mainly put the ssh keys on /root/.ssh)  #
 ############################################################
 mount -t iso9660 /dev/$DEVICE /mnt/stratuslab
-  
+
 if [ -f /mnt/stratuslab/context.sh ]; then
   . /mnt/stratuslab/init.sh
 fi
@@ -68,8 +70,11 @@ fi
 # Run all contextualization script from /etc/stratuslab/conf.d #
 ################################################################
 
-exec $external_context_run
+echo "Start all external context"
+chmod +x $external_context_run
+. $external_context_run
+rm -f $external_context_run
 
 umount /mnt/stratuslab
-  
+
 exit 0
