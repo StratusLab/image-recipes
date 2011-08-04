@@ -9,7 +9,7 @@ fi
 /bin/mkdir -p /mnt/stratuslab
 
 ### Tune2fs all filesystem (avoid fsck after 180 days) ###
-fs_list=`mount | grep "ext[3-4]" | awk '{print $3}'`
+fs_list=`mount | grep "ext[3-4]" | awk '{print $1}'`
 
 for fs in $fs_list
 do
