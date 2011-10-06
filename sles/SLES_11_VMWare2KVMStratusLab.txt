@@ -79,7 +79,7 @@ Features:       block usb resume.userspace resume.kernel
 ...
 Rescue:/> 
 
-3. Additional configuration (root password, fstab, runlevel).
+3. Additional configuration (root password, fstab, runlevel, persistent network).
 
 # Set a password just in case
 Rescue:/> mknod -m 644 /dev/urandom c 1 9
@@ -95,6 +95,12 @@ Rescue:/> vim /etc/fstab # comment out:
 # Change default run level from 5 to 3
 Rescue:/> vim /etc/inittab
 id:3:initdefault:
+
+# NB! Disable persistent network rule in udev or else networking will not work.
+#     See: http://www.novell.com/support/documentLink.do?externalID=3048119
+# Insert the following line to /etc/rc.d/boot.udev, /etc/rc.d/boot.udev_retry 
+# into start procedure:
+echo -n > /etc/udev/rules.d/70-persistent-net.rules
 
 4. StratusLab contextualization.
 
