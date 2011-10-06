@@ -40,7 +40,7 @@ fi
 ###############################################################################
 if [ -d $configuration_dir ]
 then
- context_files=`ls $configuration_dir/*.context`
+ context_files=`ls $configuration_dir/*.context | sort -n`
  for context_file in $context_files
  do
   source $context_file

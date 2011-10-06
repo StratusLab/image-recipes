@@ -38,4 +38,7 @@ then
   /sbin/service ncm-cdispd restart >> /var/log/quattorcontext.log
 fi
 
-/sbin/reboot
+if [ "xQUATTORPROFILE" != "x" -o "x$IPSERVICE" != "x" ]
+then
+  /sbin/reboot
+fi
