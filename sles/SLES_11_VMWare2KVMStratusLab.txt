@@ -1,5 +1,5 @@
-Procedure to migrate SLES 11 image (containting dependencies for SCOS-2000) 
-created for VMWare to KVM with contextualisation for StratusLab.
+Procedure to migrate SLES 11 image (containing dependencies for SCOS-2000) 
+created for VMWare to KVM with contextualization for StratusLab.
 
 0. Trivia
 
@@ -24,7 +24,7 @@ At VM creation time make sure that
 
 * CDROM should be IDE
 * HD should be SCSI (by default HD is virtio; after changing to SCSI libvirt 
-may report problems of incompartible address for SCSI; FIX: 
+may report problems of incompatible address for SCSI; FIX: 
 'virsh edit SLES_11_test' and remove <address> element for the HD)
 
 When booted from CD choose Rescue Mode and make sure that console=ttyS0 is 
@@ -85,8 +85,10 @@ Rescue:/>
 Rescue:/> mknod -m 644 /dev/urandom c 1 9
 Rescue:/> passwd
 
+## NB! The image provided by TERMA couldn't boot if console device is not provided
+#      in libvirt deployment script. Be careful, otherwise the image may not boot.
 # Edit /boot/grub/menu.lst and add console=ttyS0 to be able to connect to the 
-VM via 'virsh console'.
+# VM via 'virsh console'.
 
 Rescue:/> vim /etc/fstab # comment out:
 #/dev/sdb1            /lhome1 ...
@@ -102,7 +104,16 @@ id:3:initdefault:
 # into start procedure:
 echo -n > /etc/udev/rules.d/70-persistent-net.rules
 
-4. StratusLab contextualization.
+4. DHCPD as dhcp client
+# Prevent the client deamon from setting hostname as we want to get it 
+# from DHCP server. 
+
+# In /etc/sysconfig/network/dhcp, the following two variables should have 
+# the values below 
+DHCLIENT_SET_HOSTNAME="no"
+DHCLIENT_HOSTNAME_OPTION=""
+
+5. StratusLab contextualization.
 
 Rescue:/> cat > /etc/rc.d/onecontext < EOF
 #! /bin/sh
@@ -165,14 +176,14 @@ Rescue:~ # e2fsck  /dev/sda2
 # Stop the VM
 Rescue:~ # shutdown -h now
 
-5. Configure networking. After re-booting with deployment script B.
+6. Configure networking. After re-booting with deployment script B.
 
 Connect with VNC and manually configure networking with YaST. Remove exiting 
 eth0 device. Configure RTL-8139: change device name from eth1 to eth0. After 
 saving the configuration DCHP request will be done (updates /etc/resolve.conf 
 as well). 
 
-6. Configure sshd. In /etc/ssh/sshd_config
+7. Configure sshd. In /etc/ssh/sshd_config
 PasswordAuthentication no
 PermitRootLogin without-password
 
