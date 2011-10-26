@@ -110,7 +110,7 @@ echo -n > /etc/udev/rules.d/70-persistent-net.rules
 
 # In /etc/sysconfig/network/dhcp, the following two variables should have 
 # the values below 
-DHCLIENT_SET_HOSTNAME="no"
+DHCLIENT_SET_HOSTNAME="yes"
 DHCLIENT_HOSTNAME_OPTION=""
 
 5. StratusLab contextualization.
