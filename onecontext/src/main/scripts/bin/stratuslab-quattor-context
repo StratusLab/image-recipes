@@ -15,7 +15,7 @@ status_suspect () {
   final_msg="Some errors occured during Quattor contextualisaton. Check the logs to determine the actual impact." 
 }
 
-echo "Starting Quattor contextualization on $(date -R)..." > ${quattorcontext_log}
+echo "Starting Quattor contextualization on $(date -R)..." >> ${quattorcontext_log}
 
 trap error_occured ERR
 
