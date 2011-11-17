@@ -1,44 +1,89 @@
 #!/bin/sh
 
-echo "#"`date` > /var/log/quattorcontext.log
+quattorcontext_log=/var/log/quattorcontext.log
 
-if [ "x$IPSERVICE" != "x" ]
+ccm_conf_file=/etc/ccm.conf
+quattor_client_rpms='ccm ncm-ncd spma ncm-spma'
+ccm_global_lock=/var/lib/ccm/global.lock
+
+error_occured () {
+  echo "An error occured. Aborting Quattor contextualisation." >> ${quattorcontext_log}
+  exit 1
+}
+
+status_suspect () {
+  final_msg="Some errors occured during Quattor contextualisaton. Check the logs to determine the actual impact." 
+}
+
+echo "Starting Quattor contextualization on $(date -R)..." > ${quattorcontext_log}
+
+trap error_occured ERR
+
+if [ -n "${QUATTOR_YUM_URLS}" ]
 then
-  echo "## Network Configuration ##" >> /var/log/quattorcontext.log
-  if [ "x$NETMASKSERVICE" != "x" ]
+  echo "## Installing Quattor client ##" >> ${quattorcontext_log}
+  echo "QUATTOR_YUM_URLS=${QUATTOR_YUM_URLS}" >> ${quattorcontext_log}
+  quattor_yum_repos_conf=/etc/yum.repos.d/quattor-install.repo
+  if [ -e ${quattor_yum_repos_conf} ]
   then
-    NETMASKSERVICECMD="netmask $NETMASKSERVICE"
+    rm ${quattor_yum_repos_conf}
   fi
-  if [ "x$GWSERVICE" != "x" ]
+  let i=1
+  quattor_repo_option=''
+  for url in ${QUATTOR_YUM_URLS}
+  do
+    repo_id=quattor_repo_${i}
+    echo "[${repo_id}]" >> ${quattor_yum_repos_conf}
+    echo "name=repository ${i} for Quattor client installation" >> ${quattor_yum_repos_conf}
+    echo "baseurl=${url}" >> ${quattor_yum_repos_conf}
+    echo "enabled=0" >> ${quattor_yum_repos_conf}
+    echo "gpgcheck=0" >> ${quattor_yum_repos_conf}
+    echo >> ${quattor_yum_repos_conf}
+    quattor_repo_option="${quattor_repo_option} --enablerepo=${repo_id} "
+    let i=$i+1
+  done
+  echo "YUM options = ${quattor_repo_option}" >> ${quattorcontext_log}
+  yum install -y ${quattor_repo_option} ${quattor_client_rpms} >> ${quattorcontext_log} 2>&1
+
+else
+  echo "QUATTOR_YUM_URLS undefined. Assuming Quattor client is already installed..." >> ${quattorcontext_log}
+fi
+
+if [ -n "${QUATTOR_PROFILE}" -a -n "${QUATTOR_PROFILES_URL}" ]
+then
+  QUATTOR_ENABLE_CLIENT=${QUATTOR_ENABLE_CLIENT:-0}
+  echo "## Updating configuration with Quattor ##" >> ${quattorcontext_log}
+  echo "CCM configuration file = ${ccm_conf_file}" >> ${quattorcontext_log}
+  echo "QUATTOR_PROFILES_URL=${QUATTOR_PROFILES_URL}" >> ${quattorcontext_log}
+  echo "QUATTOR_PROFILE=${QUATTOR_PROFILE}" >> ${quattorcontext_log}
+  echo "#"`date` > ${ccm_conf_file}
+  echo "profile ${QUATTOR_PROFILES_URL}/${QUATTOR_PROFILE}.xml" >> ${ccm_conf_file}
+  echo "world_readable 0" >> ${ccm_conf_file}
+
+  ulimit -n 4096 >> ${quattorcontext_log} 2>&1
+  if [ ! -f ${ccm_global_lock} ]
   then
-   current_gw=`/sbin/route -n |grep 'UG' | awk '{print $2}'`
-   /sbin/route del default gw $current_gw  >> /var/log/quattorcontext.log
-   /sbin/route add default gw $GWSERVICE  >> /var/log/quattorcontext.log
-   echo "GATEWAY="$GWSERVICE >> /etc/sysconfig/network
+    echo "Initializing CCM..." >> ${quattorcontext_log}
+    /usr/sbin/ccm-initialise >> ${quattorcontext_log} 2>&1
   fi
-  /sbin/ifconfig eth0:1 $IPSERVICE $NETMASKSERVICECMD >> /var/log/quattorcontext.log
+  /usr/sbin/ccm-fetch >> ${quattorcontext_log} 2>&1
+  # From this point, ignore errors as a component failure 
+  trap status_suspect ERR
+  final_msg="Configuration successfully updated with Quattor. You may need to reboot for changes to take effect."
+  /usr/sbin/ncm-ncd --configure --all >> ${quattorcontext_log} 2>&1
+  if [ ${QUATTOR_ENABLE_CLIENT} -eq 0 ]
+  then
+    echo "Disabling Quattor client" >> ${quattorcontext_log}
+    /sbin/service cdp-listend stop >> ${quattorcontext_log} 2>&1
+    /sbin/chkconfig --level 12345 cdp-listend off >> ${quattorcontext_log} 2>&1
+    /sbin/service ncm-cdispd stop >> ${quattorcontext_log} 2>&1
+    /sbin/chkconfig --level 12345 ncm-cdispd off >> ${quattorcontext_log} 2>&1
+  else
+    echo "Quattor client not disabled (define QUATTOR_ENABLE_CLIENT=0 to disable it)" >> ${quattorcontext_log}
+  fi
+  echo ${final_msg} >> ${quattorcontext_log}
 
-  echo "DEVICE=eth0:1" > /etc/sysconfig/network-scripts/ifcfg-eth0:1
-  echo "IPADDR="$IPSERVICE >> /etc/sysconfig/network-scripts/ifcfg-eth0:1
-  echo "NETMASK="$NETMASKSERVICE >> /etc/sysconfig/network-scripts/ifcfg-eth0:1
+else
+  echo "QUATTOR_PROFILE or QUATTOR_PROFILES_URL undefined: skiping Quattor configuration" >> ${quattorcontext_log}
 fi
 
-
-if [ "x$QUATTORPROFILE" != "x" ]
-then
-  echo "## Quattor Configuration ##" >> /var/log/quattorcontext.log
-  echo "#"`date` > /etc/ccm.conf
-  echo "profile $QUATTORSERVER/$QUATTORPROFILE.xml" >> /etc/ccm.conf
-  echo "world_readable 0" >> /etc/ccm.conf
-
-  ulimit -n 4096
-  /bin/sleep 30
-  /usr/sbin/ccm-fetch -d >> /var/log/quattorcontext.log
-  /usr/sbin/ncm-ncd --configure --all >> /var/log/quattorcontext.log
-  /sbin/service ncm-cdispd restart >> /var/log/quattorcontext.log
-fi
-
-if [ "xQUATTORPROFILE" != "x" -o "x$IPSERVICE" != "x" ]
-then
-  /sbin/reboot
-fi
