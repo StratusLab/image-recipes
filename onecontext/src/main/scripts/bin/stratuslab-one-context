@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 ############################
 # Some variable definition #
@@ -6,6 +6,19 @@
 configuration_file=/etc/stratuslab/stratuslab-one-context.cfg
 configuration_dir=/etc/stratuslab/conf.d
 external_context_run=/tmp/external_context_run
+
+##########################
+# Some utility functions #
+##########################
+
+export_context_variables() {
+  context_file=$1
+  . "$context_file"
+  vars=`egrep -e '^[a-zA-Z\-\_0-9]*=' "$context_file" | sed 's/=.*$//'`
+  for var in $vars; do
+      export $var
+  done
+}
 
 echo "#!/bin/sh" > $external_context_run
 
@@ -48,7 +61,7 @@ then
   then
    if [ "x$run_exec" != "x" ]
    then
-     echo ". "$run_exec >> $external_context_run
+     echo "$run_exec" >> $external_context_run
    fi
   fi
   run_exec=""
@@ -64,6 +77,7 @@ mount -t iso9660 /dev/$DEVICE /mnt/stratuslab
 
 if [ -f /mnt/stratuslab/context.sh ]; then
   . /mnt/stratuslab/init.sh
+  export_context_variables /mnt/stratuslab/context.sh
 fi
 
 ################################################################
