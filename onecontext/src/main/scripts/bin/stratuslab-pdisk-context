@@ -1,0 +1,85 @@
+#!/bin/bash
+
+
+# --- Define variables -------------------------------------------------
+
+PDISK_DEVICE_PATH="/dev/${PDISK_DEVICE:-hdc}"
+PDISK_MOUNTPOINT=${PDISK_MOUNTPOINT:-/mnt/clouddisk}
+PDISK_FORMAT=${PDISK_FORMAT:-no}
+PDISK_FORMAT_TYPE=${PDISK_FORMAT_TYPE:-ext3}
+
+echo "======================================================================"
+echo ":: running stratus-pdisk-context on $(date)"
+
+# --- Functions --------------------------------------------------------
+
+function isAttached() {
+    local device="$1"
+    [ -b "$device" ]
+}
+
+function isFormatted() {
+    local device="$1"
+    fs=$(file -s "$device" | sed -e "s#^$device: \(.*\)#\1#g")
+    case "$fs" in
+        data)
+            return 1;;
+        *)
+            return 0;;
+    esac
+}
+
+function mountPdisk() {
+    local device="$1"
+    local mountpoint="$2"
+
+    echo ":: mounting persistent disk on $mountpoint"
+    mkdir -p "$mountpoint"
+    mount "$device" "$mountpoint"
+    if [ $? -ne 0 ]; then
+        echo ":: failed to mount pdisk, abort"
+        exit 2
+    fi
+}
+
+function formatPdisk() {
+    local device="$1"
+    local format="$2"
+
+    echo ":: formatting persistent disk in $format"
+    mkfs -t "$format" -F "$device"
+    if [ $? -ne 0 ]; then
+        echo ":: failed to format pdisk, abort"
+        exit 3
+    fi
+}
+
+# --- Check variables --------------------------------------------------
+
+if [ -z "$PDISK_DEVICE_PATH" -o -z "$PDISK_MOUNTPOINT" ]; then
+    echo ":: undefined pdisk device or mountpoint, abort"
+    exit 1
+fi
+
+# --- Main -------------------------------------------------------------
+
+if ! isAttached $PDISK_DEVICE_PATH; then
+    echo ":: persistent disk $PDISK_DEVICE_PATH doesn't exist, abort"
+    exit 1
+fi
+
+case "$PDISK_FORMAT" in
+    y|Y|yes|YES|Yes)
+        if ! isFormatted "$PDISK_DEVICE_PATH"; then
+            formatPdisk $PDISK_DEVICE_PATH $PDISK_FORMAT_TYPE
+        fi
+        ;;
+    f|F|force|FORCE|Force)
+        formatPdisk $PDISK_DEVICE_PATH $PDISK_FORMAT_TYPE
+        ;;
+esac
+
+mountPdisk $PDISK_DEVICE_PATH $PDISK_MOUNTPOINT
+
+exit 0
+
