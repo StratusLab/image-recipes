@@ -27,7 +27,7 @@ echo "#!/bin/sh" > $external_context_run
 #################################################
 if [ -f $configuration_file ]
 then
- source $configuration_file
+ export_context_variables $configuration_file
 fi
 
 ###################################################
@@ -56,7 +56,7 @@ then
  context_files=`ls $configuration_dir/*.context | sort -n`
  for context_file in $context_files
  do
-  source $context_file
+  export_context_variables $context_file
   if [ "x$enable" == "xyes" ]
   then
    if [ "x$run_exec" != "x" ]
