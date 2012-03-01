@@ -11,7 +11,7 @@ url  --url http://mirrors.ircam.fr/pub/fedora/linux/releases/16/Everything/x86_6
 repo  --name=StratusLab --baseurl=http://yum.stratuslab.eu/snapshots/fedora14/
 lang en_US.UTF-8
 keyboard us
-network --onboot yes --device p2p1 --bootproto dhcp
+network --onboot yes --device eth0 --bootproto dhcp 
 timezone --utc Etc/UTC
 firstboot --disabled
 
@@ -28,6 +28,7 @@ clearpart --all --drives=sda
 zerombr
 
 # Creating the new partitions
+part biosboot --fstype=biosboot --size=1
 part /boot --fstype=ext3        --ondisk=sda --asprimary
 part /     --fstype=ext4 --grow --ondisk=sda --asprimary
 bootloader --location=mbr --driveorder=sda --append="norhgb quiet vga=792"
@@ -78,7 +79,7 @@ stratuslab-one-context
 sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-context.cfg
 # Remove any occurences of the mac address
 rm /etc/udev/rules.d/70-persistent-*.rules
-sed -i 's/HWADDR.*$//' /etc/sysconfig/network-scripts/ifcfg-p2p1
+sed -i 's/HWADDR.*$//' /etc/sysconfig/network-scripts/ifcfg-eth0
 # Add sdb swap disk in the fstab
 echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
 %end
