@@ -103,5 +103,6 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
                                 in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
                                 sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
+ 				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
                                 sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context
