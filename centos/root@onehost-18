@@ -20,12 +20,12 @@ timezone --utc Etc/UTC
 # Note that any partitions you deleted are not expressed
 # here so unless you clear all partitions first, this is
 # not guaranteed to work
-clearpart --all --drives=sda --initlabel
+clearpart --all --drives=sda,sdb --initlabel
 
 part /boot --fstype=ext4 --size=500        --ondisk=sda --asprimary
 part /     --fstype=ext4 --size=1   --grow --ondisk=sda --asprimary
 
-#part swap --fstype=swap --size=1 --grow --ondisk=sdb --asprimary
+part swap --fstype=swap --size=1 --grow --ondisk=sdb --asprimary
 
 bootloader --location=mbr --driveorder=sda --append=" rhgb crashkernel=auto quiet"
 
@@ -79,9 +79,6 @@ sed s/PasswordAuthentication\ yes/PasswordAuthentication\ no/ -i /etc/ssh/sshd_c
 sed s/GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/ -i /etc/ssh/sshd_config
 sed s/ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/ -i /etc/ssh/sshd_config
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
-
-# Add sdb swap disk in the fstab
-echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
 
 #
 # Randomize root password now.
