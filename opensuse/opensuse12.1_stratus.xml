@@ -139,6 +139,7 @@ SysVStartPriority=99
 WantedBy=multi-user.target" > /lib/systemd/system/after-local.service
 sudo systemctl enable /lib/systemd/system/after-local.service
 echo "/usr/bin/stratuslab-one-context" >> /etc/init.d/after.local
+echo "modprobe acpiphp" >> /etc/init.d/after.local
 ]]></source>
       </script>
     </post-scripts>
