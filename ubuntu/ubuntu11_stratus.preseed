@@ -97,6 +97,7 @@ d-i debian-installer/exit/poweroff boolean true
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
 #d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
+d-i preseed/late_command string apt-get install acpid
 d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
                                 in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
