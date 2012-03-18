@@ -50,7 +50,7 @@ d-i	user-setup/encrypt-home			boolean	false
 #d-i debian-installer/allow_unauthenticated boolean true
 
 ### Package selection
-tasksel tasksel/first multiselect server, openssh-server, acpid
+tasksel tasksel/first multiselect server, openssh-server
 #d-i pkgsel/include string openssh-server build-essential
 d-i pkgsel/upgrade select full-upgrade
 d-i pkgsel/update-policy select none
