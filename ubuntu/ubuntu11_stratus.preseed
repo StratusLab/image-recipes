@@ -50,8 +50,10 @@ d-i	user-setup/encrypt-home			boolean	false
 #d-i debian-installer/allow_unauthenticated boolean true
 
 ### Package selection
-tasksel tasksel/first multiselect server, openssh-server
-#d-i pkgsel/include string openssh-server build-essential
+tasksel tasksel/first multiselect standard, server
+d-i pkgsel/install-recommends true
+d-i pkgsel/include string curl, acpid, unzip, zip, openssh-server
+
 d-i pkgsel/upgrade select full-upgrade
 d-i pkgsel/update-policy select none
 
@@ -98,7 +100,6 @@ d-i debian-installer/exit/poweroff boolean true
 # packages and run commands in the target system.
 #d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
 d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
-				in-target apt-get install acpid ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
                                 in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
