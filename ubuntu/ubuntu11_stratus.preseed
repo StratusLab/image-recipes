@@ -99,6 +99,9 @@ d-i debian-installer/exit/poweroff boolean true
 #d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
 d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
 				in-target apt-get install acpid ; \
+                                in-target apt-get install zip ; \
+ 				in-target apt-get install unzip ; \
+				in-target apt-get install curl ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
                                 in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
