@@ -82,6 +82,12 @@ rm /etc/udev/rules.d/70-persistent-*.rules
 sed -i 's/HWADDR.*$//' /etc/sysconfig/network-scripts/ifcfg-eth0
 # Add sdb swap disk in the fstab
 echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
+
+#
+# Ensure that all packages are up-to-date.
+#
+yum upgrade -y 
+
 %end
 
 # Reboot after installation
