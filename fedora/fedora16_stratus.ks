@@ -80,8 +80,15 @@ sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-
 # Remove any occurences of the mac address
 rm /etc/udev/rules.d/70-persistent-*.rules
 sed -i 's/HWADDR.*$//' /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "DHCPV6C=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 # Add sdb swap disk in the fstab
 echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
+
+
+# Remove reference to installation hostname in network configuration
+#
+sed -i "/HOSTNAME/d" /etc/sysconfig/network
+
 
 #
 # Ensure that all packages are up-to-date.
