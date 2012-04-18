@@ -107,4 +107,12 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
                                 sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
  				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
-                                sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context
+				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
+ 				echo "if [ \"\$reason\" != BOUND ] && [ \"\$reason\" != RENEW ] \
+   				&& [ \"\$reason\" != REBIND ] && [ \"\$reason\" != REBOOT ]
+				then
+        				return
+				fi
+				hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)
+				echo \$hostname > /etc/hostname
+				hostname \$hostname" > /target/etc/dhcp/dhclient-exit-hooks.d/hostname

@@ -123,6 +123,7 @@ rpm -ivh stratuslab-one-context-0.0.1-0.20111215.110102.noarch.rpm
 sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-context.cfg
 # Remove any occurences of the mac address
 rm -f /etc/udev/rules.d/70-persistent-*.rules
+echo "" > /etc/HOSTNAME
 echo "[Unit]
 Description=/etc/init.d/after.local Compatibility
 ConditionFileIsExecutable=/etc/init.d/after.local
