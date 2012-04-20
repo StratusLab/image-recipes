@@ -78,7 +78,6 @@ stratuslab-one-context
 # Set the cdrom block device to use for contextualisation
 sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-context.cfg
 # Remove any occurences of the mac address
-rm /etc/udev/rules.d/70-persistent-*.rules
 sed -i 's/HWADDR.*$//' /etc/sysconfig/network-scripts/ifcfg-eth0
 echo "DHCPV6C=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 # Add sdb swap disk in the fstab
@@ -88,6 +87,7 @@ systemctl disable NetworkManager.service
 systemctl enable network.service
 systemctl start network.service
 
+rm /etc/udev/rules.d/70-persistent-*.rules
 
 # Remove reference to installation hostname in network configuration
 #
