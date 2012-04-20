@@ -83,6 +83,10 @@ sed -i 's/HWADDR.*$//' /etc/sysconfig/network-scripts/ifcfg-eth0
 echo "DHCPV6C=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 # Add sdb swap disk in the fstab
 echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
+systemctl stop NetworkManager.service
+systemctl disable NetworkManager.service
+systemctl enable network.service
+systemctl start network.service
 
 
 # Remove reference to installation hostname in network configuration
