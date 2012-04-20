@@ -108,6 +108,7 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
  				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
 				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
+				echo "post-up /sbin/dhclient -6 eth0" >> /target/etc/network/interfaces ; \
  				echo "if [ \"\$reason\" != BOUND ] && [ \"\$reason\" != RENEW ] \
    				&& [ \"\$reason\" != REBIND ] && [ \"\$reason\" != REBOOT ]
 				then
