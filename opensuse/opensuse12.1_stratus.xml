@@ -124,6 +124,8 @@ sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-
 # Remove any occurences of the mac address
 rm -f /etc/udev/rules.d/70-persistent-*.rules
 echo "" > /etc/HOSTNAME
+# Add sdb swap disk in the fstab
+echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
 echo "[Unit]
 Description=/etc/init.d/after.local Compatibility
 ConditionFileIsExecutable=/etc/init.d/after.local
