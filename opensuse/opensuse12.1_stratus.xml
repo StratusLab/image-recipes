@@ -150,8 +150,8 @@ echo "modprobe acpiphp" >> /etc/init.d/after.local
   <software>
     <packages config:type="list">
       <package>openssh</package>
-      <package>dhcp</package>
-      <package>dhcp-client</package>	
+      <!--<package>dhcp</package>-->
+      <!--<package>dhcp-client</package>-->	
     </packages>
     <patterns config:type="list">
       <pattern>apparmor</pattern>
