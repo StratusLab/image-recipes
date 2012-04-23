@@ -125,7 +125,7 @@ sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-
 rm -f /etc/udev/rules.d/70-persistent-*.rules
 echo "" > /etc/HOSTNAME
 # Add sdb swap disk in the fstab
-echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
+#echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
 echo "[Unit]
 Description=/etc/init.d/after.local Compatibility
 ConditionFileIsExecutable=/etc/init.d/after.local
@@ -150,8 +150,8 @@ echo "modprobe acpiphp" >> /etc/init.d/after.local
   <software>
     <packages config:type="list">
       <package>openssh</package>
-      <!--<package>dhcp</package>-->
-      <!--<package>dhcp-client</package>-->	
+      <package>dhcp</package>
+      <package>dhcp-client</package>	
     </packages>
     <patterns config:type="list">
       <pattern>apparmor</pattern>
