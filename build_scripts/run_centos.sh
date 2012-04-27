@@ -7,7 +7,14 @@ export TYPE=base
 export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=centos
-sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://mirror.centos.org/centos/6/os/x86_64/ -x \"ks=http://$NODE_IP/centos-6.2-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
+
+#clean from failed build
+sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME"
+
+#restart libvirtd
+sudo su - root -c "service libvirtd restart"
+
+sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://mirror.centos.org/centos/6/os/x86_64/ -x \"ks=http://$NODE_IP/centos-6.2-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
 
 
