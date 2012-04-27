@@ -20,7 +20,7 @@ sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm 
 
 
 
-while [ -n "`sudo su - root -c 'virsh list | grep $NAME'|| true`" ]; do 
+while [ -n "`sudo su - root -c "virsh list | grep $NAME"|| true`" ]; do 
   sleep 120 
 done
 
