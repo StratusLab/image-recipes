@@ -1,14 +1,14 @@
 #!/bin/sh 
 export OS=Ubuntu
-export OS_VERSION=11
+export OS_VERSION=12.04
 export OS_ARCH=x86_64
 export IMAGE_VERSION=1.0
 export TYPE=base
 export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=ubuntu
-
-sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=5 --location=http://archive.ubuntu.com/ubuntu/dists/oneiric/main/installer-amd64/ -x \"auto=true priority=critical url=http://$NODE_IP/ubuntu11_stratus.preseed\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
+export DIST=precise
+sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=5 --location=http://archive.ubuntu.com/ubuntu/dists/$DIST/main/installer-amd64/ -x \"auto=true priority=critical url=http://$NODE_IP/ubuntu_stratus.preseed\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
 
 
