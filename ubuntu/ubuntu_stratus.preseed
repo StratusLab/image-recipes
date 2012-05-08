@@ -31,7 +31,8 @@ d-i	partman/choose_partition		select	finish
 d-i	partman/confirm				boolean	true
 d-i	partman/confirm_nooverwrite		boolean	true
 d-i	partman-md/confirm			boolean	true
-d-i	partman-auto/expert_recipe	string boot-root :: 20 50 100 ext4 $primary{ } $bootable{ } method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /boot } .  500 10000 1000000000 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 
+d-i     partman/mount_style select traditional
+#d-i	partman-auto/expert_recipe	string boot-root :: 20 50 100 ext4 $primary{ } $bootable{ } method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /boot } .  500 10000 1000000000 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 
 
 ### Account setup
 d-i	passwd/root-login			boolean	true
