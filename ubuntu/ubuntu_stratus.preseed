@@ -102,7 +102,6 @@ d-i debian-installer/exit/poweroff boolean true
 # packages and run commands in the target system.
 #d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
 d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
-                                echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
                                 in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
@@ -110,6 +109,8 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
  				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
 				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
+                                sed -i "/swap/d" /target/etc/fstab ; \
+                                echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
 				echo "post-up /sbin/dhclient -6 eth0" >> /target/etc/network/interfaces ; \
  				echo "hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)">/target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
 				echo "\$hostname > /etc/hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
