@@ -1,0 +1,115 @@
+#### Contents of the preconfiguration file
+
+### Localization
+d-i	debian-installer/locale			string	en_US
+# Keyboard selection.
+d-i	console-setup/ask_detect		boolean	false
+#d-i	keyboard-configuration/modelcode	string	pc105
+d-i	keyboard-configuration/layoutcode	string	us
+#d-i	keyboard-configuration/variantcode	string	dvorak
+
+### Network configuration
+d-i	netcfg/choose_interface			select	auto
+d-i	netcfg/get_hostname			string	unassigned-hostname
+d-i	netcfg/get_domain			string	unassigned-domain
+
+### Clock and time zone setup
+d-i	clock-setup/utc				boolean	true
+d-i	time/zone				string	Etc/UTC
+d-i	clock-setup/ntp				boolean	false
+#d-i	clock-setup/ntp-server			string	ntp.lal.in2p3.fr
+
+
+### Partitioning
+d-i	partman-auto/method			string	regular
+d-i	partman-lvm/device_remove_lvm		boolean	true
+d-i	partman-md/device_remove_md		boolean	true
+d-i	partman-lvm/confirm			boolean	false
+d-i	partman-auto/choose_recipe		select	atomic
+d-i	partman-partitioning/confirm_write_new_label boolean true
+d-i	partman/choose_partition		select	finish
+d-i	partman/confirm				boolean	true
+d-i	partman/confirm_nooverwrite		boolean	true
+d-i	partman-md/confirm			boolean	true
+d-i	partman-auto/expert_recipe	string boot-root :: 20 50 100 ext4 $primary{ } $bootable{ } method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /boot } .  500 10000 1000000000 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 
+
+### Account setup
+d-i	passwd/root-login			boolean	true
+d-i	passwd/make-user			boolean	false
+d-i	passwd/root-password-crypted		password $1$lFa4QIio$Wb8v1xsKePKngDT6CDqeF0
+d-i	user-setup/allow-password-weak		boolean	true
+d-i	user-setup/encrypt-home			boolean	false
+
+
+### Apt setup
+#d-i apt-setup/restricted boolean true
+#d-i apt-setup/universe boolean true
+#d-i apt-setup/backports boolean true
+#d-i apt-setup/services-select multiselect security
+#d-i apt-setup/security_host string security.ubuntu.com
+#d-i apt-setup/security_path string /ubuntu
+#d-i debian-installer/allow_unauthenticated boolean true
+
+### Package selection
+tasksel tasksel/first multiselect standard, server
+d-i pkgsel/install-recommends true
+d-i pkgsel/include string curl, acpid, unzip, zip, openssh-server
+
+d-i pkgsel/upgrade select full-upgrade
+d-i pkgsel/update-policy select none
+
+### Boot loader installation
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+
+### Finishing up the installation
+d-i finish-install/reboot_in_progress note
+#d-i cdrom-detect/eject boolean false
+#d-i debian-installer/exit/halt boolean true
+d-i debian-installer/exit/poweroff boolean true
+
+### Preseeding other packages
+# Depending on what software you choose to install, or if things go wrong
+# during the installation process, it's possible that other questions may
+# be asked. You can preseed those too, of course. To get a list of every
+# possible question that could be asked during an install, do an
+# installation, and then run these commands:
+#   debconf-get-selections --installer > file
+#   debconf-get-selections >> file
+
+
+#### Advanced options
+### Running custom commands during the installation
+# d-i preseeding is inherently not secure. Nothing in the installer checks
+# for attempts at buffer overflows or other exploits of the values of a
+# preconfiguration file like this one. Only use preconfiguration files from
+# trusted locations! To drive that home, and because it's generally useful,
+# here's a way to run any shell command you'd like inside the installer,
+# automatically.
+
+# This first command is run as early as possible, just after
+# preseeding is read.
+#d-i preseed/early_command string anna-install some-udeb
+# This command is run immediately before the partitioner starts. It may be
+# useful to apply dynamic partitioner preseeding that depends on the state
+# of the disks (which may not be visible when preseed/early_command runs).
+#d-i partman/early_command \
+#       string debconf-set partman-auto/disk "$(list-devices disk | head -n1)"
+# This command is run just before the install finishes, but when there is
+# still a usable /target directory. You can chroot to /target and use it
+# directly, or use the apt-install and in-target commands to easily install
+# packages and run commands in the target system.
+#d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
+d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
+                                echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
+                                in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
+                                in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
+                                sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
+                                sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
+ 				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
+                                echo "exit 0" >> /target/etc/rc.local ; \
+				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
+				echo "post-up /sbin/dhclient -6 eth0" >> /target/etc/network/interfaces ; \
+ 				echo "hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)">/target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
+				echo "\$hostname > /etc/hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
+				echo "hostname \$hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname
