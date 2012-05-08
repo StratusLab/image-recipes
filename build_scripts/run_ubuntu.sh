@@ -8,7 +8,8 @@ export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=ubuntu
 export DIST=precise
-sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=5 --location=http://archive.ubuntu.com/ubuntu/dists/$DIST/main/installer-amd64/ -x \"auto=true priority=critical url=http://$NODE_IP/ubuntu_stratus.preseed\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
+
+sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://archive.ubuntu.com/ubuntu/dists/$DIST/main/installer-amd64/ -x \"auto=true priority=critical url=http://$NODE_IP/ubuntu_stratus.preseed\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
 
 
