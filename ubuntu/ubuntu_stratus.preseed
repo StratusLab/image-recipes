@@ -105,6 +105,10 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
                                 in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
                                 sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
+				sed 's/#PasswordAuthentication\ yes/PasswordAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
+				sed 's/#GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
+				sed 's/ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
+				echo "PermitRootLogin without-password" >> /target/etc/ssh/sshd_config ; \
                                 sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
  				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
