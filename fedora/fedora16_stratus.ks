@@ -93,6 +93,15 @@ rm /etc/udev/rules.d/70-persistent-*.rules
 #
 sed -i "/HOSTNAME/d" /etc/sysconfig/network
 
+#
+# Secure the SSH daemon by shutting down non-key access.
+#
+
+sed s/PasswordAuthentication\ yes/PasswordAuthentication\ no/ -i /etc/ssh/sshd_config
+sed s/GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/ -i /etc/ssh/sshd_config
+echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
+
+
 
 #
 # Ensure that all packages are up-to-date.
