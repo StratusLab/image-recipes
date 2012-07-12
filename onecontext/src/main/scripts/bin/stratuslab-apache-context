@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# StratusLab Apache contextualization script.
+#
+# This context allows owner to protect the Apache web server with a basic
+# authentication system. It requires two context variables, CREDENTIAL_LOGIN
+# and CREDENTIAL_PASS, which should contain the credentials.
+#
+# In addition, owner can customize the context on the following points:
+#  * configuration file path (APACHE_AUTH_CONF)
+#  * credentials file path (APACHE_AUTH_FILE)
+#  * authentication zone name (APACHE_AUTH_NAME)
+#
+# The script should work on all RedHat base distributions but was only tested
+# on CentOS.
+
+
+# --- Variables --------------------------------------------------------
+
+CREDENTIAL_LOGIN=${CREDENTIAL_LOGIN:-}
+CREDENTIAL_PASS=${CREDENTIAL_PASS:-}
+
+APACHE_AUTH_FILE=${APACHE_AUTH_FILE:-/etc/httpd/conf/auth}
+APACHE_AUTH_CONF=${APACHE_AUTH_CONF:-/etc/httpd/conf.d/auth.conf}
+APACHE_AUTH_NAME=${APACHE_AUTH_NAME:-Protected Area}
+
+# --- Main -------------------------------------------------------------
+
+echo "======================================================================"
+echo ":: running StratusLab Apache context on $(date)"
+
+if [[ -z "${CREDENTIAL_LOGIN}" || -z "${CREDENTIAL_PASS}" ]]; then
+    echo ":: no credentials found, abort"
+    exit 1
+fi
+
+if ! rpm -q 'httpd'; then
+    echo ":: Apache not installed, abort"
+    exit 1
+fi
+
+mkdir -p "$(dirname ${APACHE_AUTH_FILE})" "$(dirname ${APACHE_AUTH_CONF})"
+
+htpasswd -csb "${APACHE_AUTH_FILE}" "${CREDENTIAL_LOGIN}" "${CREDENTIAL_PASS}"
+
+cat <<EOF > "${APACHE_AUTH_CONF}"
+<Location />
+AuthType Basic
+AuthName "${APACHE_AUTH_NAME}"
+AuthUserFile ${APACHE_AUTH_FILE}
+Require valid-user
+</Location>
+EOF
+
+service httpd reload
+
+exit 0
+
