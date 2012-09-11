@@ -1,6 +1,6 @@
 #!/bin/sh 
 export OS=CentOS
-export OS_VERSION=6.2
+export OS_VERSION=6.3
 export OS_ARCH=x86_64
 export IMAGE_VERSION=1.0
 export TYPE=base
@@ -14,7 +14,7 @@ sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME"
 #restart libvirtd
 sudo su - root -c "service libvirtd restart"
 
-sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://mirror.centos.org/centos/6/os/$OS_ARCH/ -x \"ks=http://$NODE_IP/centos-6.2-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
+sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://mirror.centos.org/centos/6/os/$OS_ARCH/ -x \"ks=http://$NODE_IP/centos-6-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
 
 
