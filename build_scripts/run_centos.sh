@@ -1,4 +1,5 @@
-#!/bin/sh 
+#!/bin/sh -ex
+
 export OS=CentOS
 export OS_VERSION=6.3
 export OS_ARCH=x86_64
