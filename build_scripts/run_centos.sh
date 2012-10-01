@@ -16,17 +16,23 @@ sudo su - root -c "service libvirtd restart"
 
 sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://mirror.centos.org/centos/6/os/$OS_ARCH/ -x \"ks=http://$NODE_IP/centos-6-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
-
-
-
-
 while [ -n "`sudo su - root -c "virsh list | grep $NAME"|| true`" ]; do 
   sleep 120 
 done
 
-
-
-sudo su - root -c "yum install -y --nogpgcheck stratuslab-cli-user stratuslab-cli-sysadmin"
+### Install StratusLab client tools.
+# Ensure that latest metadata and packages are used.
+sudo yum clean all
+sudo yum remove stratuslab-cli-user stratuslab-cli-sysadmin -y || true
+# Create directory to hold packages.
+sudo rm -Rf /tmp/pkg-cache
+sudo mkdir -p /tmp/pkg-cache
+# Download the required packages.
+sudo yumdownloader --destdir=/tmp/pkg-cache stratuslab-cli-user stratuslab-cli-sysadmin
+# Force installation without dependencies.
+# Dependency on ldap is still needed.
+sudo yum install -y python-ldap
+sudo rpm --install --nodeps --force /tmp/pkg-cache/*.rpm
 
 
 sudo su - root -c "cd $PWD ; stratus-build-metadata --author=\"hudson builder\" --os=$OS --os-version=$OS_VERSION --os-arch=$OS_ARCH --image-version=$IMAGE_VERSION --comment=\"$OS  $OS_VERSION $TYPE image automatically created by hudson. Configured only with a root user. The firewall in the image is disabled, IPv6 is enabled, and SELinux disabled. Uses the standard StratusLab contextualization mechanisms. A swap volume is expected to be provided on /dev/sdb. \" --compression=gz $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
