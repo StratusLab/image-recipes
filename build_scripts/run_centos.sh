@@ -40,4 +40,4 @@ sudo su - root -c "cd $PWD ; stratus-build-metadata --disks-bus virtio --author=
 
 sudo su - root -c "stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o $PWD/test.p12"
 
-sudo su - root -c "cd $PWD ; stratus-upload-image -f --compress=gz --with-marketplace -U build -P build2934 --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.xml"
+sudo su - root -c "cd $PWD ; stratus-upload-image --marketplace-endpoint onehost-5.lal.in2p3.fr --pdisk-endpoint onehost-5.lal.in2p3.fr --pdisk-username test --pdisk-password test1122 --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
