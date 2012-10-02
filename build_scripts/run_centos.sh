@@ -10,7 +10,7 @@ export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=centos
 
 #clean from failed build
-sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME"
+sudo su - root -c "rm -rf /etc/libvirt/qemu/$NAME*"
 
 #restart libvirtd
 sudo su - root -c "service libvirtd restart"
