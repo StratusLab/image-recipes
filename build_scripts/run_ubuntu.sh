@@ -9,7 +9,14 @@ export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=ubuntu
 export DIST=precise
 
-sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=scsi,size=$IMAGE_SIZE --location=http://archive.ubuntu.com/ubuntu/dists/$DIST/main/installer-amd64/ -x \"auto=true priority=critical url=http://$NODE_IP/ubuntu_stratus.preseed\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
+
+#clean from failed build
+sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME.xml"
+
+#restart libvirtd
+sudo su - root -c "service libvirtd restart"
+
+sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=ide,size=$IMAGE_SIZE --location=http://archive.ubuntu.com/ubuntu/dists/$DIST/main/installer-amd64/ -x \"auto=true priority=critical url=http://$NODE_IP/ubuntu_stratus.preseed\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
 
 
@@ -21,6 +28,6 @@ sudo su - root -c "yum install -y --nogpgcheck stratuslab-cli-user stratuslab-cl
 
 sudo su - root -c "cd $PWD ; stratus-build-metadata --author=\"hudson builder\" --os=$OS --os-version=$OS_VERSION --os-arch=$OS_ARCH --image-version=$IMAGE_VERSION --comment=\"$OS  $OS_VERSION $TYPE image automatically created by hudson. Configured only with a root user. The firewall in the image is disabled, IPv6 is enabled, and SELinux disabled. Uses the standard StratusLab contextualization mechanisms. A swap volume is expected to be provided on /dev/sdb. \" --compression=gz $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
 
-sudo su - root -c "cd $PWD ; stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o test.p12"
+sudo su - root -c "stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o $PWD/test.p12"
 
 sudo su - root -c "cd $PWD ; stratus-upload-image -f --compress=gz --with-marketplace -U build -P build2934 --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.xml"

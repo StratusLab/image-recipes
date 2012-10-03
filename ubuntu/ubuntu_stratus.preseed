@@ -115,7 +115,8 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
 				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
                                 sed -i "/swap/d" /target/etc/fstab ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
-				echo "post-up /sbin/dhclient -6 eth0" >> /target/etc/network/interfaces ; \
+				echo "post-up /sbin/dhclient -6 eth0 -cf /etc/dhcp/dhclient.conf" >> /target/etc/network/interfaces ; \
  				echo "hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)">/target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
 				echo "\$hostname > /etc/hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
-				echo "hostname \$hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname
+				echo "hostname \$hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
+ 				sed -i "s/#timeout\ 60/timeout\ 10/"  /target/etc/dhcp/dhclient.conf

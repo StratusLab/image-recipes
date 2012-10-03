@@ -4,11 +4,11 @@
   <add-on>
     <add_on_products config:type="list">
       <listentry>
-        <media_url>http://download.opensuse.org/distribution/12.1/repo/oss/suse</media_url>
-        <product>openSUSE 12.1</product>
+        <media_url>http://download.opensuse.org/distribution/12.2/repo/oss/suse</media_url>
+        <product>openSUSE 12.2</product>
         <product_dir>/</product_dir>
         <ask_on_error config:type="boolean">true</ask_on_error>
-        <name>openSUSE 12.1</name>
+        <name>openSUSE 12.2</name>
       </listentry>
     </add_on_products>
   </add-on>
