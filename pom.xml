@@ -3,7 +3,7 @@
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>image-parent</artifactId>
-  <version>2.1</version>
+  <version>2.2-SNAPSHOT</version>
   <name>Image Recipes (ROOT POM)</name>
 
   <url>http://hudson.stratuslab.eu/images</url>
@@ -22,11 +22,6 @@ Image recipes
 
   <modules>
   </modules>
-
-  <properties>
-    <nexus.release.repository.name>fedora-14-releases</nexus.release.repository.name>
-    <nexus.snapshot.repository.name>fedora-14-snapshots</nexus.snapshot.repository.name>
-  </properties>
 
   <profiles>
     <profile>
