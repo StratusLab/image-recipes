@@ -31,7 +31,7 @@ Image recipes
         </file>
       </activation>
       <modules>
-        <module>onecontext</module>
+        <module>contextualization</module>
       </modules>
     </profile>
   </profiles>
