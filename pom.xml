@@ -14,6 +14,12 @@ Image recipes
 
   <packaging>pom</packaging>
 
+  <parent>
+    <groupId>eu.stratuslab</groupId>
+    <artifactId>distribution</artifactId>
+    <version>2.1</version>
+  </parent>
+
   <modules>
   </modules>
 
@@ -64,22 +70,31 @@ Image recipes
   </scm>
 
   <repositories>
+
     <repository>
       <releases>
 	<enabled>true</enabled>
-	<updatePolicy>always</updatePolicy>
-	<checksumPolicy>fail</checksumPolicy>
       </releases>
       <snapshots>
 	<enabled>false</enabled>
-	<updatePolicy>never</updatePolicy>
-	<checksumPolicy>fail</checksumPolicy>
       </snapshots>
-      <id>StratusLabReleases</id>
-      <name>StratusLab Releases</name>
-      <url>http://repo.stratuslab.eu:8081/content/repositories/${nexus.release.repository.name}</url>
-      <layout>default</layout>
+      <id>POMReleases</id>
+      <name>POM Releases</name>
+      <url>http://repo.stratuslab.eu:8081/content/repositories/releases</url>
     </repository>
+
+    <repository>
+      <releases>
+	<enabled>false</enabled>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+      </snapshots>
+      <id>POMSnapshots</id>
+      <name>POM Snapshots</name>
+      <url>http://repo.stratuslab.eu:8081/content/repositories/snapshots</url>
+    </repository>
+
   </repositories>
 
   <distributionManagement>
