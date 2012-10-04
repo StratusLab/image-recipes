@@ -60,8 +60,8 @@ Image recipes
   </ciManagement>
 
   <scm>
-    <connection>scm:git:ssh://apache@code.stratuslab.eu/ext/git/stratuslab-image-recipes.git</connection>
-    <developerConnection>scm:git:ssh://apache@code.stratuslab.eu/ext/git/stratuslab-image-recipes.git</developerConnection>
+    <connection>scm:git:ssh://git@github.com/StratusLab/image-recipes.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/StratusLab/image-recipes.git</developerConnection>
   </scm>
 
   <repositories>
