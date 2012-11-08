@@ -1,9 +1,11 @@
 #!/bin/sh
 
+set +x
+if [ -z "$PDISK_USERNAME" -o -z "$PDISK_PASSWORD" ]; then
+   echo "PDisk username/password should be defined with PDISK_USERNAME/PDISK_PASSWORD. Aborting!"
+   exit 1
+fi
 set -xe
-
-PDISK_USERNAME=${1:?"PDisk username should be provided as first argument."}
-PDISK_USERPASS=${2:?"PDisk password should be provided as second argument."}
 
 export OS=CentOS
 export OS_VERSION=6.3
@@ -45,4 +47,8 @@ sudo su - root -c "cd $PWD ; stratus-build-metadata --disks-bus virtio --author=
 
 sudo su - root -c "stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o $PWD/test.p12"
 
-sudo su - root -c "cd $PWD ; stratus-upload-image --machine-image-origin --public --compress gz --marketplace-endpoint http://marketplace.stratuslab.eu --pdisk-endpoint pdisk.lal.stratuslab.eu --pdisk-username ${PDISK_USERNAME} --pdisk-password ${PDISK_USERPASS} --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
+set +x
+cmd="stratus-upload-image --machine-image-origin --public --compress gz --marketplace-endpoint http://marketplace.stratuslab.eu --pdisk-endpoint pdisk.lal.stratuslab.eu --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
+echo "Lanching: $cmd"
+sudo su - root -c "cd $PWD ; $cmd --pdisk-username ${PDISK_USERNAME} --pdisk-password ${PDISK_PASSWORD}"
+set -x
