@@ -1,5 +1,8 @@
 #!/bin/sh
 
+MARKETPLACE_ENDPOINT=${MARKETPLACE_ENDPOINT:-http://marketplace.stratuslab.eu}
+PDISK_ENDPOINT=${PDISK_ENDPOINT:-pdisk.lal.stratuslab.eu}
+
 set +x
 if [ -z "$PDISK_USERNAME" -o -z "$PDISK_PASSWORD" ]; then
    echo "PDisk username/password should be defined with PDISK_USERNAME/PDISK_PASSWORD. Aborting!"
@@ -48,7 +51,7 @@ sudo su - root -c "cd $PWD ; stratus-build-metadata --disks-bus virtio --author=
 sudo su - root -c "stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o $PWD/test.p12"
 
 set +x
-cmd="stratus-upload-image --machine-image-origin --public --compress gz --marketplace-endpoint http://marketplace.stratuslab.eu --pdisk-endpoint pdisk.lal.stratuslab.eu --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
+cmd="stratus-upload-image --machine-image-origin --public --compress gz --marketplace-endpoint $MARKETPLACE_ENDPOINT --pdisk-endpoint $PDISK_ENDPOINT --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
 echo "Lanching: $cmd"
 sudo su - root -c "cd $PWD ; $cmd --pdisk-username ${PDISK_USERNAME} --pdisk-password ${PDISK_PASSWORD}"
 set -x
