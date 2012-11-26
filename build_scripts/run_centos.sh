@@ -35,6 +35,8 @@ done
 # Ensure that latest metadata and packages are used.
 sudo yum clean all
 sudo yum remove stratuslab-cli-user stratuslab-cli-sysadmin -y || true
+# Install stratuslab-pdisk-host back as it gets removed when stratuslab-cli-* are removed. 
+sudo yum install -y --nogpg stratuslab-pdisk-host || true
 # Create directory to hold packages.
 sudo rm -Rf /tmp/pkg-cache
 sudo mkdir -p /tmp/pkg-cache
