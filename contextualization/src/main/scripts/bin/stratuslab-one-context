@@ -70,10 +70,19 @@ then
 fi
 
 ############################################################
+# Test if we are using LABEL for contextualisation device. If 
+# not use the name given by the kernel.   
 # Mount contextualization device and do the standard stuff #
 # from opennebula (mainly put the ssh keys on /root/.ssh)  #
 ############################################################
-mount -t iso9660 /dev/$DEVICE /mnt/stratuslab
+
+mount -L _STRATUSLAB /mnt/stratuslab >/dev/null 2>&1
+RETVAL=$?
+if [ 0 -eq $RETVAL ]; then
+    break
+else
+    mount -t iso9660 /dev/$DEVICE /mnt/stratuslab >/dev/null 2>&1    
+fi
 
 if [ -f /mnt/stratuslab/context.sh ]; then
   . /mnt/stratuslab/init.sh
