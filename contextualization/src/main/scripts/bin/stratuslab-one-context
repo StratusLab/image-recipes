@@ -76,7 +76,7 @@ fi
 # from opennebula (mainly put the ssh keys on /root/.ssh)  #
 ############################################################
 
-mount -L _STRATUSLAB /mnt/stratuslab >/dev/null 2>&1
+mount -L _CLOUD_INIT /mnt/stratuslab >/dev/null 2>&1
 RETVAL=$?
 if [ 0 -eq $RETVAL ]; then
     break
