@@ -75,7 +75,7 @@ fi
 # Mount contextualization device and do the standard stuff #
 # from opennebula (mainly put the ssh keys on /root/.ssh)  #
 ############################################################
-
+mkdir /mnt/stratuslab
 mount -L _CLOUD_INIT /mnt/stratuslab >/dev/null 2>&1
 RETVAL=$?
 if [ 0 -eq $RETVAL ]; then
