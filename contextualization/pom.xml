@@ -3,7 +3,7 @@
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>contextualization</artifactId>
-  <version>2.5</version>
+  <version>2.6-SNAPSHOT</version>
   <name>StratusLab Contextualization (RPM)</name>
 
   <packaging>rpm</packaging>
@@ -11,7 +11,7 @@
   <parent>
     <groupId>eu.stratuslab.image</groupId>
     <artifactId>image-parent</artifactId>
-    <version>2.5</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
   
 
