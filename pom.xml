@@ -3,7 +3,7 @@
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>image-parent</artifactId>
-  <version>2.5-SNAPSHOT</version>
+  <version>2.5</version>
   <name>Image Recipes (ROOT POM)</name>
 
   <url>http://hudson.stratuslab.eu/images</url>
