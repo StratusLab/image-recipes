@@ -21,18 +21,18 @@ d-i	clock-setup/ntp				boolean	false
 
 
 ### Partitioning
-d-i	partman-auto/method			string	regular
-d-i	partman-lvm/device_remove_lvm		boolean	true
-d-i	partman-md/device_remove_md		boolean	true
-d-i	partman-lvm/confirm			boolean	false
-d-i	partman-auto/choose_recipe		select	atomic
-d-i	partman-partitioning/confirm_write_new_label boolean true
-d-i	partman/choose_partition		select	finish
-d-i	partman/confirm				boolean	true
-d-i	partman/confirm_nooverwrite		boolean	true
-d-i	partman-md/confirm			boolean	true
+d-i     partman-auto/method                     string  regular
+d-i     partman-lvm/device_remove_lvm           boolean true
+d-i     partman-md/device_remove_md             boolean true
+d-i     partman-lvm/confirm                     boolean false
+d-i     partman-auto/choose_recipe              select  atomic
+d-i     partman-partitioning/confirm_write_new_label boolean true
+d-i     partman/choose_partition                select  finish
+d-i     partman/confirm                         boolean true
+d-i     partman/confirm_nooverwrite             boolean true
+d-i     partman-md/confirm                      boolean true
 d-i     partman/mount_style select traditional
-#d-i	partman-auto/expert_recipe	string boot-root :: 20 50 100 ext4 $primary{ } $bootable{ } method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /boot } .  500 10000 1000000000 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 
+d-i     partman-basicfilesystems/no_swap boolean true
 
 ### Account setup
 d-i	passwd/root-login			boolean	true
@@ -54,7 +54,7 @@ d-i	user-setup/encrypt-home			boolean	false
 ### Package selection
 tasksel tasksel/first multiselect standard, server
 d-i pkgsel/install-recommends true
-d-i pkgsel/include string curl, acpid, unzip, zip, openssh-server
+d-i pkgsel/include string curl, acpid, unzip, zip, openssh-server, cloud-init
 
 d-i pkgsel/upgrade select full-upgrade
 d-i pkgsel/update-policy select none
@@ -102,21 +102,30 @@ d-i debian-installer/exit/poweroff boolean true
 # packages and run commands in the target system.
 #d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
 d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
-                                in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
-                                in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
+                                in-target wget http://yum.stratuslab.eu/snapshots/centos-6.2/stratuslab-one-context_2.5-1.20130129_all.deb ; \
+                                in-target dpkg -i stratuslab-one-context_2.5-1.20130129_all.deb ; \
                                 sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
 				sed 's/#PasswordAuthentication\ yes/PasswordAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
 				sed 's/#GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
 				sed 's/ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
 				echo "PermitRootLogin without-password" >> /target/etc/ssh/sshd_config ; \
-                                sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
- 				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
+				echo "start on (local-filesystems and net-device-up IFACE=eth0)" > /target/etc/init/stratuslab-one-context.conf ; \
+				echo "stop on runlevel [!12345]" >> /target/etc/init/stratuslab-one-context.conf ; \
+				echo "task" >> /target/etc/init/stratuslab-one-context.conf ; \
+				echo "console output" >> /target/etc/init/stratuslab-one-context.conf ; \
+				echo "exec /usr/bin/stratuslab-one-context" >> /target/etc/init/stratuslab-one-context.conf ; \
+				sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
+                                echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
 				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
                                 sed -i "/swap/d" /target/etc/fstab ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
-				echo "post-up /sbin/dhclient -6 eth0 -cf /etc/dhcp/dhclient.conf" >> /target/etc/network/interfaces ; \
+ 				echo "#post-up /sbin/dhclient -6 eth0 -cf /etc/dhcp/dhclient.conf" >> /target/etc/network/interfaces ; \
  				echo "hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)">/target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
 				echo "\$hostname > /etc/hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
 				echo "hostname \$hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
- 				sed -i "s/#timeout\ 60/timeout\ 10/"  /target/etc/dhcp/dhclient.conf
+				sed -i "/127.0.1.1/d" /target/etc/hosts ; \
+				sed -i "s/#timeout\ 60/timeout\ 5/"  /target/etc/dhcp/dhclient.conf ; \
+				sed -i "s/#retry\ 60/retry\ 2/"  /target/etc/dhcp/dhclient.conf; \
+				sed -i "s/user: ubuntu/user: root/" /target/etc/cloud/cloud.cfg ; \
+				sed -i "s/disable_root: 1/disable_root: 0/" /target/etc/cloud/cloud.cfg

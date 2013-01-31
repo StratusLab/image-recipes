@@ -118,16 +118,27 @@
         <interpreter>shell</interpreter>
         <!-- <network_needed config:type="boolean">false</network_needed> -->
         <source><![CDATA[#!/bin/bash
-wget http://yum.stratuslab.eu/snapshots/fedora14/stratuslab-one-context-0.0.1-0.20111215.110102.noarch.rpm
-rpm -ivh stratuslab-one-context-0.0.1-0.20111215.110102.noarch.rpm
+#StratusLab Standard Contextualization mechanism
+wget http://yum.stratuslab.eu/snapshots/centos-6.2/stratuslab-one-context-2.6-0.20130130.110529.noarch.rpm
+rpm -ivh stratuslab-one-context-2.6-0.20130130.110529.noarch.rpm
+
 sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-context.cfg
+
+#StratusLab Cloud-Init Contextualization mechanism
+
 # Remove any occurences of the mac address
-rm -f /etc/udev/rules.d/70-persistent-*.rules
+rm -f /lib/udev/rules.d/*net-gen*
+rm -f /etc/udev/rules.d/*net.rules
+
+#hostname
+
 echo "" > /etc/HOSTNAME
 # Add sdb swap disk in the fstab
 echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
 
-sed 's/ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /etc/ssh/sshd_config
+sed 's/#PasswordAuthentication\ yes/PasswordAuthentication\ no/' -i /etc/ssh/sshd_config
+sed 's/#GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/' -i /etc/ssh/sshd_config
+sed 's/#ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /etc/ssh/sshd_config
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 
 echo "[Unit]
@@ -144,18 +155,116 @@ SysVStartPriority=99
 
 [Install]
 WantedBy=multi-user.target" > /lib/systemd/system/after-local.service
-sudo systemctl enable /lib/systemd/system/after-local.service
+systemctl enable /lib/systemd/system/after-local.service
 echo "/usr/bin/stratuslab-one-context" >> /etc/init.d/after.local
 echo "modprobe acpiphp" >> /etc/init.d/after.local
+
+sed -i 's/AuthorizedKeysFile/#AuthorizedKeysFile/' /etc/ssh/sshd_config
+
+echo "[Unit]
+Description=Apply the settings specified in cloud-config
+After=network.target syslog.target cloud-config.target
+Requires=cloud-config.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init-cfg all final
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=tty
+
+[Install]
+WantedBy=multi-user.target" >/lib/systemd/system/cloud-config.service
+systemctl enable cloud-config.service
+
+echo "[Unit]
+Description=Cloud-config availability
+Requires=cloud-init-local.service cloud-init.service" > /lib/systemd/system/cloud-config.target
+systemctl enable cloud-config.target
+
+echo "[Unit]
+Description=Execute cloud user/final scripts
+After=network.target syslog.target cloud-config.service rc-local.service
+Requires=cloud-config.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init-cfg all final
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=tty
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/cloud-final.service
+systemctl enable cloud-final.service
+
+echo "[Unit]
+Description=Initial cloud-init job (pre-networking)
+Wants=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init start-local
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=tty
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/cloud-init-local.service
+systemctl enable cloud-init-local.service
+
+echo "[Unit]
+Description=Initial cloud-init job (metadata service crawler)
+After=local-fs.target network.target cloud-init-local.service
+Requires=network.target
+Wants=local-fs.target cloud-init-local.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init start
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=tty
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/cloud-init.service
+systemctl enable cloud-init.service
 ]]></source>
       </script>
     </post-scripts>
+    <init-scripts config:type="list">
+      <script>
+        <debug config:type="boolean">false</debug>
+        <feedback config:type="boolean">false</feedback>
+        <filename>initscript-install.sh</filename>
+        <interpreter>shell</interpreter>
+        <source><![CDATA[#!/bin/bash
+#StratusLab Cloud-Init Contextualization mechanism
+#Add Cloud repo for OpenSUSE 12_2
+zypper addrepo http://download.opensuse.org/repositories/Cloud:/Tools/openSUSE_12.2/ "Cloud:Tools (openSUSE_12.2)"
+
+#Install Cloud-init package
+zypper --non-interactive --gpg-auto-import-keys in cloud-init      
+]]></source>
+      </script>
+    </init-scripts>    	
   </scripts>
   <software>
     <packages config:type="list">
       <package>openssh</package>
       <package>dhcp</package>
-      <package>dhcp-client</package>	
+      <package>dhcp-client</package>
     </packages>
     <patterns config:type="list">
       <pattern>apparmor</pattern>

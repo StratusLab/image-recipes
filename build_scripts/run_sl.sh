@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh 
 
 MARKETPLACE_ENDPOINT=${MARKETPLACE_ENDPOINT:-http://marketplace.stratuslab.eu}
 PDISK_ENDPOINT=${PDISK_ENDPOINT:-pdisk.lal.stratuslab.eu}
@@ -10,22 +10,23 @@ if [ -z "$PDISK_USERNAME" -o -z "$PDISK_PASSWORD" ]; then
 fi
 set -xe
 
-export OS=CentOS
+
+export OS=SL
 export OS_VERSION=6.3
 export OS_ARCH=x86_64
 export IMAGE_VERSION=1.0
 export TYPE=base
 export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
-export NAME=centos
+export NAME=scientific-linux
 
 #clean from failed build
-sudo su - root -c "rm -rf /etc/libvirt/qemu/$NAME*"
+sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME.xml"
 
 #restart libvirtd
 sudo su - root -c "service libvirtd restart"
 
-sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=ide,size=$IMAGE_SIZE --location=http://mirror.centos.org/centos/6/os/$OS_ARCH/ -x \"ks=http://$NODE_IP/centos-6-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
+sudo su - root -c "virt-install --nographics --noautoconsole --accelerate --hvm --name $NAME --ram=2000 --disk $PWD/$OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img,bus=ide,size=$IMAGE_SIZE --location=http://ftp.scientificlinux.org/linux/scientific/6/$OS_ARCH/os/ -x \"ks=http://$NODE_IP/sl-6-minimal-ks-1.0.cfg\" --network bridge=br0 --mac=$MAC_ADDRESS  --noreboot"
 
 while [ -n "`sudo su - root -c "virsh list | grep $NAME"|| true`" ]; do 
   sleep 120 
@@ -35,8 +36,6 @@ done
 # Ensure that latest metadata and packages are used.
 sudo yum clean all
 sudo yum remove stratuslab-cli-user stratuslab-cli-sysadmin -y || true
-# Install stratuslab-pdisk-host back as it gets removed when stratuslab-cli-* are removed. 
-sudo yum install -y --nogpg stratuslab-pdisk-host || true
 # Create directory to hold packages.
 sudo rm -Rf /tmp/pkg-cache
 sudo mkdir -p /tmp/pkg-cache

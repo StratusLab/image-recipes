@@ -1,4 +1,4 @@
-#### Contents of the preconfiguration file (for squeeze)
+#### Contents of the preconfiguration file (for sid)
 ### Localization
 # Preseeding only locale sets language, country and locale.
 d-i debian-installer/locale string en_US
@@ -31,9 +31,9 @@ d-i mirror/http/directory string /debian
 d-i mirror/http/proxy string
 
 # Suite to install.
-d-i mirror/suite string squeeze
+d-i mirror/suite string sid
 # Suite to use for loading installer components (optional).
-d-i mirror/udeb/suite string squeeze
+d-i mirror/udeb/suite string sid
 
 ### Account setup
 d-i     passwd/root-login                       boolean true
@@ -62,10 +62,7 @@ d-i     partman/confirm                         boolean true
 d-i     partman/confirm_nooverwrite             boolean true
 d-i     partman-md/confirm                      boolean true
 d-i     partman/mount_style select traditional
-#d-i    partman-auto/expert_recipe      string boot-root :: 20 50 100 ext4 $primary{ } $bootable{ } method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /boot } .  500 10000 1000000000 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } .
-
-
-
+d-i     partman-basicfilesystems/no_swap boolean true
 
 ### Base system installation
 # Configure APT to not install recommended packages by default. Use of this
@@ -177,24 +174,31 @@ d-i debian-installer/exit/poweroff boolean true
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
 #d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
-d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rules ; \
-                                in-target wget http://quattorsrv.lal.in2p3.fr/vm/tezier/stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
-                                in-target dpkg -i stratuslab-one-context_0.0.1-1.20111215_all.deb ; \
-                                sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
-                                sed 's/#PasswordAuthentication\ yes/PasswordAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
-                                sed 's/#GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
-                                sed 's/ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
-                                echo "PermitRootLogin without-password" >> /target/etc/ssh/sshd_config ; \
-                                sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
-                                echo "modprobe acpiphp" >> /target/etc/rc.local ; \
-                                echo "exit 0" >> /target/etc/rc.local ; \
-                                sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
-                                sed -i "/swap/d" /target/etc/fstab ; \
+d-i preseed/late_command string rm -f /target/etc/udev/rules.d/70-persistent-*.rules ; \
+				in-target wget http://yum.stratuslab.eu/snapshots/centos-6.2/stratuslab-one-context_2.5-1.20130122_all.deb ; \
+				in-target dpkg -i stratuslab-one-context_2.5-1.20130122_all.deb ; \
+				sed -i 's/context_device.*$/context_device=sr0/' /target/etc/stratuslab/stratuslab-one-context.cfg ; \
+				sed 's/#PasswordAuthentication\ yes/PasswordAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
+				sed 's/#GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
+				sed 's/ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /target/etc/ssh/sshd_config ; \
+				echo "PermitRootLogin without-password" >> /target/etc/ssh/sshd_config ; \
+				sed -i "/swap/d" /target/etc/fstab ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
-                                echo "post-up /sbin/dhclient -6 eth0 -cf /etc/dhcp/dhclient.cionf" >> /target/etc/network/interfaces ; \
-                                echo "hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)">/target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
-                                echo "\$hostname > /etc/hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
-                                echo "hostname \$hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
-                                sed -i "s/#timeout\ 60/timeout\ 5/"  /target/etc/dhcp/dhclient.conf ; \
-                                sed -i "s/#retry\ 60/retry\ 2/"  /target/etc/dhcp/dhclient.conf
-
+				sed -i "/exit/d" /target/etc/rc.local ; \
+				echo "/usr/bin/stratuslab-one-context" >> /target/etc/rc.local ; \
+				echo "modprobe acpiphp" >> /target/etc/rc.local ; \
+				echo "exit 0" >> /target/etc/rc.local ; \
+				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
+				echo "post-up /sbin/dhclient -6 eth0 -cf /etc/dhcp/dhclient.conf" >> /target/etc/network/interfaces ; \
+				echo "hostname=\$(host \$new_ip_address | cut -d ' ' -f 5 | cut -d '.' -f 1)">/target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
+				echo "\$hostname > /etc/hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
+				echo "hostname \$hostname" >> /target/etc/dhcp/dhclient-exit-hooks.d/hostname ; \
+				sed -i "s/#timeout\ 60/timeout\ 5/"  /target/etc/dhcp/dhclient.conf ; \
+				sed -i "s/#retry\ 60/retry\ 2/"  /target/etc/dhcp/dhclient.conf ; \
+				echo "deb http://ftp.debian.org/debian experimental main" >> /target/etc/apt/sources.list ; \
+				in-target apt-get update ; \
+				in-target apt-get -y install -t experimental  cloud-init ; \
+				sed -i 's/user: ubuntu/user: root/' /target/etc/cloud/cloud.cfg ; \
+				sed -i 's/disable_root: 1/disable_root: 0/' /target/etc/cloud/cloud.cfg ; \
+				in-target dpkg --force-remove-essential --remove sysvinit ; \
+				in-target apt-get -y --force-yes install upstart

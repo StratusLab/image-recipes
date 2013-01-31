@@ -9,14 +9,14 @@ set -xe
 
 
 export OS=Debian
-export OS_VERSION=5.0
+export OS_VERSION=7.0
 export OS_ARCH=x86_64
 export IMAGE_VERSION=1.0
 export TYPE=base
 export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=debian
-export DIST=squeeze
+export DIST=sid
 
 #clean from failed build
 sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME.xml"
