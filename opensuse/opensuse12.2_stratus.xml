@@ -159,6 +159,8 @@ systemctl enable /lib/systemd/system/after-local.service
 echo "/usr/bin/stratuslab-one-context" >> /etc/init.d/after.local
 echo "modprobe acpiphp" >> /etc/init.d/after.local
 
+#In /etc/ssh/sshd_config comment the line "AuthorizedKeysFile .ssh/authorized_keys. This is because cloud-init parse this file, get .ssh/authorized_keys value corresponding to AuthorizedKeysFile key, then put contents of user ssh public key in /.ssh/authorized_keys instead of /root/.ssh/authorized_keys. 
+
 sed -i 's/AuthorizedKeysFile/#AuthorizedKeysFile/' /etc/ssh/sshd_config
 
 echo "[Unit]
