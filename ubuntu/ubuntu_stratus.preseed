@@ -117,6 +117,7 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
 				sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
                                 echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
+				echo "acpiphp" >> /target/etc/modules ; \
 				sed -i 's#!/bin/sh$#!/bin/bash#' /target/usr/bin/stratuslab-one-context ; \
                                 sed -i "/swap/d" /target/etc/fstab ; \
                                 echo "/dev/sdb swap swap defaults 0 0" >> /target/etc/fstab ; \
