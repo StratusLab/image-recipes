@@ -19,20 +19,40 @@ d-i	time/zone				string	Etc/UTC
 d-i	clock-setup/ntp				boolean	false
 #d-i	clock-setup/ntp-server			string	ntp.lal.in2p3.fr
 
+d-i partman-auto/disk string /dev/sda
+d-i     partman-auto/method                     string  regular
+d-i     partman-auto/choose_recipe              select  boot-root
+
+d-i partman-auto/expert_recipe string                         \
+      boot-root ::                                            \
+#              40 50 100 ext3                                  \
+#                      $primary{ } $bootable{ }                \
+#                      method{ format } format{ }              \
+#                      use_filesystem{ } filesystem{ ext3 }    \
+#                      mountpoint{ /boot }                     \
+#              .                                               \
+              500 50 1000000000 ext4                       \
+                      $primary{ } method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ / }                         \
+              .
+#              64 512 300% linux-swap                          \
+#                      method{ swap } format{ }                \
+#              .
+
+
 
 ### Partitioning
-d-i     partman-auto/method                     string  regular
 d-i     partman-lvm/device_remove_lvm           boolean true
 d-i     partman-md/device_remove_md             boolean true
 d-i     partman-lvm/confirm                     boolean false
-d-i     partman-auto/choose_recipe              select  atomic
 d-i     partman-partitioning/confirm_write_new_label boolean true
 d-i     partman/choose_partition                select  finish
 d-i     partman/confirm                         boolean true
 d-i     partman/confirm_nooverwrite             boolean true
 d-i     partman-md/confirm                      boolean true
 d-i     partman/mount_style select traditional
-d-i     partman-basicfilesystems/no_swap boolean true
+d-i     partman-basicfilesystems/no_swap boolean false
 
 ### Account setup
 d-i	passwd/root-login			boolean	true
@@ -129,4 +149,6 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
 				sed -i "s/#timeout\ 60/timeout\ 5/"  /target/etc/dhcp/dhclient.conf ; \
 				sed -i "s/#retry\ 60/retry\ 2/"  /target/etc/dhcp/dhclient.conf; \
 				sed -i "s/user: ubuntu/user: root/" /target/etc/cloud/cloud.cfg ; \
-				sed -i "s/disable_root: 1/disable_root: 0/" /target/etc/cloud/cloud.cfg
+				sed -i "s/disable_root: 1/disable_root: 0/" /target/etc/cloud/cloud.cfg; \
+				echo "mounts:">>/target/etc/cloud/cloud.cfg; \
+				echo "- [ swap, null ]">>/target/etc/cloud/cloud.cfg
