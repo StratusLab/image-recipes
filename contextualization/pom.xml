@@ -1,9 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project 
+    xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>contextualization</artifactId>
-  <version>2.6-SNAPSHOT</version>
   <name>StratusLab Contextualization (RPM)</name>
 
   <packaging>rpm</packaging>
@@ -11,11 +14,9 @@
   <parent>
     <groupId>eu.stratuslab.image</groupId>
     <artifactId>image-parent</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>13.05-SNAPSHOT</version>
   </parent>
   
-
-  <!-- NOTE: This project MUST have same version as proxy module. -->
   <properties>
     <bin.dir>/usr/bin</bin.dir>
     <init.d.dir>/etc/init.d</init.d.dir>
@@ -30,6 +31,27 @@
     <plugins>
 
       <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-assembly-plugin</artifactId>
+	
+	<executions>
+	  <execution>
+	    <id>cli-user-bundle</id>
+	    <goals>
+	      <goal>single</goal>
+	    </goals>
+	    <phase>package</phase>
+	    <configuration>
+	      <appendAssemblyId>false</appendAssemblyId>
+	      <descriptors>
+		<descriptor>src/main/assembly/bundle.xml</descriptor>
+	      </descriptors>
+	    </configuration>
+	  </execution>
+	</executions>
+      </plugin>
+      
+      <plugin>
 	<groupId>org.codehaus.mojo</groupId>
 	<artifactId>rpm-maven-plugin</artifactId>
 	<extensions>true</extensions>
@@ -40,7 +62,7 @@
 	  <group>System</group>
 	  <vendor>StratusLab</vendor>
 	  <packager>StratusLab</packager>
-	  <copyright>Apache</copyright>
+	  <copyright>Apache 2</copyright>
 	  <url>http://stratuslab.eu/</url>
 	  <needarch>noarch</needarch>
 	  <description>
@@ -61,10 +83,10 @@ fi
 /sbin/chkconfig --add stratuslab-one-context
 /usr/bin/stratuslab-one-context-postinstall
 </script>
-          </postinstallScriptlet>
-
+	  </postinstallScriptlet>
+	  
 	  <mappings>
-
+	    
 	    <mapping>
 	      <directory>${bin.dir}</directory>
 	      <filemode>755</filemode>
@@ -77,7 +99,7 @@ fi
 		</source>
 	      </sources>
 	    </mapping>
-
+	    
 	    <mapping>
 	      <directory>${init.d.dir}</directory>
 	      <filemode>755</filemode>
@@ -104,7 +126,6 @@ fi
                 </source>
               </sources>
             </mapping>
-
 
 	  </mappings>
 	</configuration>
