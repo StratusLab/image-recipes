@@ -7,6 +7,7 @@
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>image-parent</artifactId>
+  <version>13.05.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Image Recipes (ROOT POM)</name>
 
