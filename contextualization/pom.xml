@@ -9,130 +9,30 @@
   <artifactId>contextualization</artifactId>
   <name>StratusLab Contextualization (RPM)</name>
 
-  <packaging>rpm</packaging>
+  <packaging>pom</packaging>
 
   <parent>
     <groupId>eu.stratuslab.image</groupId>
     <artifactId>image-parent</artifactId>
     <version>13.05-SNAPSHOT</version>
   </parent>
+
+  <modules>
+    <module>tar</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <id>build-rpm</id>
+      <activation>
+        <file>
+          <exists>/usr/bin/rpmbuild</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>rpm</module>
+      </modules>
+    </profile>
+  </profiles>
   
-  <properties>
-    <bin.dir>/usr/bin</bin.dir>
-    <init.d.dir>/etc/init.d</init.d.dir>
-    <etc.dir>/etc</etc.dir>
- 
-    <maven.build.timestamp.format>yyyyMMdd.HHmmss</maven.build.timestamp.format>
-    <RELEASE>0.${maven.build.timestamp}</RELEASE>
-  </properties>
-
-  <build>
-
-    <plugins>
-
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-assembly-plugin</artifactId>
-	
-	<executions>
-	  <execution>
-	    <id>cli-user-bundle</id>
-	    <goals>
-	      <goal>single</goal>
-	    </goals>
-	    <phase>package</phase>
-	    <configuration>
-	      <appendAssemblyId>false</appendAssemblyId>
-	      <descriptors>
-		<descriptor>src/main/assembly/bundle.xml</descriptor>
-	      </descriptors>
-	    </configuration>
-	  </execution>
-	</executions>
-      </plugin>
-      
-      <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>rpm-maven-plugin</artifactId>
-	<extensions>true</extensions>
-	<configuration>
-	  <release>${RELEASE}</release>
-	  <summary>StratusLab Contextualization</summary>
-	  <name>stratuslab-one-context</name>
-	  <group>System</group>
-	  <vendor>StratusLab</vendor>
-	  <packager>StratusLab</packager>
-	  <copyright>Apache 2</copyright>
-	  <url>http://stratuslab.eu/</url>
-	  <needarch>noarch</needarch>
-	  <description>
-	    Package containing files for StratusLab virtual machine contextualization.
-	  </description>
-
-          <preremoveScriptlet>
-            <script>
-if [ $1 -eq 0 ]
-then
-  /sbin/chkconfig --del stratuslab-one-context
-fi
-</script>
-          </preremoveScriptlet>
-
-          <postinstallScriptlet>
-            <script>
-/sbin/chkconfig --add stratuslab-one-context
-/usr/bin/stratuslab-one-context-postinstall
-</script>
-	  </postinstallScriptlet>
-	  
-	  <mappings>
-	    
-	    <mapping>
-	      <directory>${bin.dir}</directory>
-	      <filemode>755</filemode>
-	      <username>root</username>
-	      <groupname>root</groupname>
-	      <directoryIncluded>false</directoryIncluded>
-	      <sources>
-		<source>
-		  <location>${basedir}/src/main/scripts/bin</location>
-		</source>
-	      </sources>
-	    </mapping>
-	    
-	    <mapping>
-	      <directory>${init.d.dir}</directory>
-	      <filemode>755</filemode>
-	      <username>root</username>
-	      <groupname>root</groupname>
-	      <directoryIncluded>false</directoryIncluded>
-	      <sources>
-		<source>
-		  <location>src/main/scripts/init.d</location>
-		</source>
-	      </sources>
-	    </mapping>
-
-            <mapping>
-              <directory>${etc.dir}</directory>
-              <filemode>644</filemode>
-              <username>root</username>
-              <groupname>root</groupname>
-              <directoryIncluded>false</directoryIncluded>
-              <configuration>noreplace</configuration>
-              <sources>
-                <source>
-                  <location>src/main/scripts/etc</location>
-                </source>
-              </sources>
-            </mapping>
-
-	  </mappings>
-	</configuration>
-      </plugin>
-
-    </plugins>
-
-  </build>
-
 </project>
