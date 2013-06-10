@@ -7,7 +7,7 @@
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>contextualization</artifactId>
-  <name>StratusLab Contextualization (RPM)</name>
+  <name>StratusLab Contextualization (POM)</name>
 
   <packaging>pom</packaging>
 
