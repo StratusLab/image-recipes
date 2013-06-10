@@ -25,21 +25,8 @@
   </parent>
 
   <modules>
+    <module>contextualization</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>build-rpm</id>
-      <activation>
-        <file>
-          <exists>/usr/bin/rpmbuild</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>contextualization</module>
-      </modules>
-    </profile>
-  </profiles>
 
   <licenses>
     <license>
