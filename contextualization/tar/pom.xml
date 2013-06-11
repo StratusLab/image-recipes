@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>eu.stratuslab.image</groupId>
-  <artifactId>contextualization-tar</artifactId>
+  <artifactId>stratuslab-contextualization</artifactId>
   <name>StratusLab Contextualization (TAR)</name>
 
   <packaging>pom</packaging>

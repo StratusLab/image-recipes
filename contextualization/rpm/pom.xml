@@ -29,7 +29,7 @@
   <dependencies>
     <dependency>
       <groupId>eu.stratuslab.image</groupId>
-      <artifactId>contextualization-tar</artifactId>
+      <artifactId>stratuslab-contextualization</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
     </dependency>
@@ -63,7 +63,7 @@
 	<configuration>
 	  <release>${RELEASE}</release>
 	  <summary>StratusLab Contextualization</summary>
-	  <name>stratuslab-one-context</name>
+	  <name>stratuslab-contextualization</name>
 	  <group>System</group>
 	  <vendor>StratusLab</vendor>
 	  <packager>StratusLab</packager>
