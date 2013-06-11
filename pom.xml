@@ -21,7 +21,7 @@
   <parent>
     <groupId>eu.stratuslab</groupId>
     <artifactId>distribution</artifactId>
-    <version>13.05-SNAPSHOT</version>
+    <version>13.05-RC1</version>
   </parent>
 
   <modules>
