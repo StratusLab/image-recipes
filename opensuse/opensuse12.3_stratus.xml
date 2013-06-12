@@ -1,0 +1,289 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <add-on>
+    <add_on_products config:type="list">
+      <listentry>
+        <media_url>http://download.opensuse.org/distribution/12.3/repo/oss/suse</media_url>
+        <media_url>http://download.opensuse.org/update/openSUSE-stable</media_url>
+	<product>openSUSE 12.3</product>
+        <product_dir>/</product_dir>
+        <ask_on_error config:type="boolean">true</ask_on_error>
+        <name>openSUSE 12.3</name>
+      </listentry>
+    </add_on_products>
+  </add-on>
+  <bootloader>
+    <activate config:type="boolean">false</activate>
+    <loader_type>grub</loader_type>
+    <location>mbr</location>
+    <repl_mbr config:type="boolean">true</repl_mbr>
+    <sections config:type="list"/>
+  </bootloader>
+  <firewall>
+    <enable_firewall config:type="boolean">false</enable_firewall>
+    <start_firewall config:type="boolean">false</start_firewall>
+  </firewall>
+  <general>
+      <mode>
+        <confirm config:type="boolean">false</confirm>
+      </mode>
+    <signature-handling>
+      <accept_file_without_checksum config:type="boolean">false</accept_file_without_checksum>
+      <accept_unknown_gpg_key config:type="boolean">false</accept_unknown_gpg_key>
+      <accept_unsigned_file config:type="boolean">false</accept_unsigned_file>
+      <accept_verification_failed config:type="boolean">false</accept_verification_failed>
+      <import_gpg_key config:type="boolean">false</import_gpg_key>
+    </signature-handling>
+  </general>
+  <groups config:type="list"/>
+  <keyboard>
+    <keymap>us</keymap>
+  </keyboard>
+  <language>
+    <language>en_US</language>
+  </language>
+   <networking>
+    <dhcp_options>
+      <dhclient_hostname_option>AUTO</dhclient_hostname_option>
+    </dhcp_options>
+    <interfaces config:type="list">
+      <interface>
+        <bootproto>dhcp</bootproto>
+        <device>eth0</device>
+        <startmode>auto</startmode>
+        <usercontrol>no</usercontrol>
+      </interface>
+    </interfaces>
+  </networking>
+    <partitioning config:type="list">
+    <drive>
+      <device>/dev/sda</device>
+      <initialize config:type="boolean">true</initialize>
+      <partitions config:type="list">
+        <partition>
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <fstopt>acl,user_xattr</fstopt>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <mount>/</mount>
+          <mountby config:type="symbol">label</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">1</partition_nr>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>max</size>
+        </partition>
+        </partitions>
+        </drive>
+        </partitioning> 
+  <report>
+    <errors>
+      <log config:type="boolean">true</log>
+      <show config:type="boolean">true</show>
+      <timeout config:type="integer">10</timeout>
+    </errors>
+    <messages>
+      <log config:type="boolean">true</log>
+      <show config:type="boolean">true</show>
+      <timeout config:type="integer">10</timeout>
+    </messages>
+    <warnings>
+      <log config:type="boolean">true</log>
+      <show config:type="boolean">true</show>
+      <timeout config:type="integer">10</timeout>
+    </warnings>
+    <yesno_messages>
+      <log config:type="boolean">false</log>
+      <show config:type="boolean">false</show>
+      <timeout config:type="integer">0</timeout>
+    </yesno_messages>
+  </report>
+  <runlevel>
+    <services config:type="list">
+      <service>
+        <service_name>sshd</service_name>
+        <service_status>enable</service_status>
+        <service_start>3 5</service_start>
+      </service>
+    </services>
+  </runlevel>
+  <scripts>
+     <!--<chroot-scripts config:type="list">
+       <script>
+         <filename>chroot_bugfixing_801878.sh</filename>
+         <source><![CDATA[#!/bin/bash
+         sed -i 's/.*\(\/sbin\/runlevel.*\)/SYSTEMCTL_OPTIONS="" \1/'  /mnt/usr/lib/YaST2/servers_non_y2/ag_initscripts
+]]>
+         </source>
+       </script>
+     </chroot-scripts>-->
+    <post-scripts config:type="list">
+      <script>
+        <debug config:type="boolean">false</debug>
+        <feedback config:type="boolean">false</feedback>
+        <filename>postinstall.sh</filename>
+        <interpreter>shell</interpreter>
+        <!--<network_needed config:type="boolean">true</network_needed>-->
+        <source><![CDATA[#!/bin/bash
+#StratusLab Standard Contextualization mechanism
+wget http://yum.stratuslab.eu/snapshots/centos-6.2/stratuslab-one-context-2.6-0.20130130.110529.noarch.rpm
+rpm -ivh stratuslab-one-context-2.6-0.20130130.110529.noarch.rpm
+
+sed -i 's/context_device.*$/context_device=sr0/' /etc/stratuslab/stratuslab-one-context.cfg
+
+#StratusLab Cloud-Init Contextualization mechanism
+
+# Remove any occurences of the mac address
+rm -f /lib/udev/rules.d/*net-gen*
+rm -f /etc/udev/rules.d/*net.rules
+
+#hostname
+
+echo "" > /etc/HOSTNAME
+# Add sdb swap disk in the fstab
+echo "/dev/sdb swap swap defaults 0 0" >> /etc/fstab
+
+sed 's/#PasswordAuthentication\ yes/PasswordAuthentication\ no/' -i /etc/ssh/sshd_config
+sed 's/#GSSAPIAuthentication\ yes/GSSAPIAuthentication\ no/' -i /etc/ssh/sshd_config
+sed 's/#ChallengeResponseAuthentication\ yes/ChallengeResponseAuthentication\ no/' -i /etc/ssh/sshd_config
+echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
+
+echo "[Unit]
+Description=/etc/init.d/after.local Compatibility
+
+[Service]
+Type=oneshot
+ExecStart=/etc/init.d/after.local
+TimeoutSec=0
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/after-local.service
+systemctl enable /lib/systemd/system/after-local.service
+echo "/usr/bin/stratuslab-one-context" >> /etc/init.d/after.local
+echo "modprobe acpiphp" >> /etc/init.d/after.local
+
+sed -i 's/AuthorizedKeysFile/#AuthorizedKeysFile/' /etc/ssh/sshd_config
+
+echo "[Unit]
+Description=Apply the settings specified in cloud-config
+After=network.target syslog.target cloud-config.target
+Requires=cloud-config.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init-cfg all final
+RemainAfterExit=yes
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target" >/lib/systemd/system/cloud-config.service
+systemctl enable cloud-config.service
+
+echo "[Unit]
+Description=Cloud-config availability
+Requires=cloud-init-local.service cloud-init.service" > /lib/systemd/system/cloud-config.target
+systemctl enable cloud-config.target
+
+echo "[Unit]
+Description=Execute cloud user/final scripts
+After=network.target syslog.target cloud-config.service rc-local.service
+Requires=cloud-config.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init-cfg all final
+RemainAfterExit=yes
+TimeoutSec=0
+
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/cloud-final.service
+systemctl enable cloud-final.service
+
+echo "[Unit]
+Description=Initial cloud-init job (pre-networking)
+Wants=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init start-local
+RemainAfterExit=yes
+TimeoutSec=0
+
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/cloud-init-local.service
+systemctl enable cloud-init-local.service
+
+echo "[Unit]
+Description=Initial cloud-init job (metadata service crawler)
+After=local-fs.target network.target cloud-init-local.service
+Requires=network.target
+Wants=local-fs.target cloud-init-local.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cloud-init start
+RemainAfterExit=yes
+TimeoutSec=0
+
+
+[Install]
+WantedBy=multi-user.target" > /lib/systemd/system/cloud-init.service
+systemctl enable cloud-init.service
+]]></source>
+      </script>
+    </post-scripts>
+    <init-scripts config:type="list">
+      <script>
+        <debug config:type="boolean">false</debug>
+        <feedback config:type="boolean">false</feedback>
+        <filename>initscript-install.sh</filename>
+        <interpreter>shell</interpreter>
+        <source><![CDATA[#!/bin/bash
+#StratusLab Cloud-Init Contextualization mechanism
+#Add Cloud repo for OpenSUSE 12_3
+zypper addrepo http://download.opensuse.org/repositories/Cloud:/Tools/openSUSE_12.3/ "Cloud:Tools (openSUSE_12.3)"
+
+#Install Cloud-init package
+zypper --non-interactive --gpg-auto-import-keys in cloud-init      
+]]></source>
+      </script>
+    </init-scripts>    	
+  </scripts>
+  <software>
+    <packages config:type="list">
+      <package>openssh</package>
+      <package>dhcp</package>
+      <package>dhcp-client</package>
+    </packages>
+    <patterns config:type="list">
+      <pattern>apparmor</pattern>
+      <pattern>base</pattern>
+      <pattern>enhanced_base</pattern>
+      <pattern>sw_management</pattern>
+      <pattern>yast2_basis</pattern>
+      <pattern>yast2_install_wf</pattern>
+    </patterns>
+   <do_online_update config:type="boolean">true</do_online_update>
+  </software>
+  <timezone>
+    <hwclock>UTC</hwclock>
+    <timezone>Etc/UTC</timezone>
+  </timezone>
+  <users config:type="list">
+    <user>
+      <encrypted config:type="boolean">true</encrypted>
+      <user_password>$1$lFa4QIio$Wb8v1xsKePKngDT6CDqeF0</user_password>
+      <username>root</username>
+    </user>
+  </users>
+</profile>
