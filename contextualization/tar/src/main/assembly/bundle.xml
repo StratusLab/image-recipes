@@ -1,0 +1,36 @@
+<assembly>
+  <id>contexualization-bundle</id>
+  
+  <includeBaseDirectory>false</includeBaseDirectory>
+  
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  
+  <fileSets>
+
+    <fileSet>
+      <directory>${project.basedir}/src/main/scripts/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    
+    <fileSet>
+      <directory>${project.basedir}/src/main/scripts/init.d</directory>
+      <outputDirectory>etc/init.d</outputDirectory>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    
+    <fileSet>
+      <directory>${project.basedir}/src/main/scripts/etc</directory>
+      <outputDirectory>etc</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    
+  </fileSets>
+  
+</assembly>

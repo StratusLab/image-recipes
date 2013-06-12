@@ -1,0 +1,140 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>eu.stratuslab.image</groupId>
+  <artifactId>contextualization-rpm</artifactId>
+  <name>StratusLab Contextualization (RPM)</name>
+
+  <packaging>rpm</packaging>
+
+  <parent>
+    <groupId>eu.stratuslab.image</groupId>
+    <artifactId>contextualization</artifactId>
+    <version>13.05.0.RC2-SNAPSHOT</version>
+  </parent>
+  
+  <properties>
+    <bin.dir>/usr/bin</bin.dir>
+    <init.d.dir>/etc/init.d</init.d.dir>
+    <etc.dir>/etc</etc.dir>
+ 
+    <maven.build.timestamp.format>yyyyMMdd.HHmmss</maven.build.timestamp.format>
+    <RELEASE>0.${maven.build.timestamp}.${package.os}</RELEASE>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>eu.stratuslab.image</groupId>
+      <artifactId>stratuslab-contextualization</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+	<artifactId>maven-dependency-plugin</artifactId>
+
+	<executions>
+	  <execution>
+	    <phase>process-sources</phase>
+	    <goals>
+	      <goal>unpack-dependencies</goal>
+	    </goals>
+	    <configuration>
+	      <stripVersion>true</stripVersion>
+	      <type>zip</type>
+	    </configuration>
+	  </execution>
+	</executions>
+      </plugin>
+
+      <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>rpm-maven-plugin</artifactId>
+	<extensions>true</extensions>
+	<configuration>
+	  <release>${RELEASE}</release>
+	  <summary>StratusLab Contextualization</summary>
+	  <name>stratuslab-contextualization</name>
+	  <group>System</group>
+	  <vendor>StratusLab</vendor>
+	  <packager>StratusLab</packager>
+	  <copyright>Apache 2</copyright>
+	  <url>http://stratuslab.eu/</url>
+	  <needarch>noarch</needarch>
+	  <description>
+	    Package containing files for StratusLab virtual machine contextualization.
+	  </description>
+
+          <preremoveScriptlet>
+            <script>
+if [ $1 -eq 0 ]
+then
+  /sbin/chkconfig --del stratuslab-one-context
+fi
+</script>
+          </preremoveScriptlet>
+
+          <postinstallScriptlet>
+            <script>
+/sbin/chkconfig --add stratuslab-one-context
+/usr/bin/stratuslab-one-context-postinstall
+</script>
+	  </postinstallScriptlet>
+	  
+	  <mappings>
+	    
+	    <mapping>
+	      <directory>${bin.dir}</directory>
+	      <filemode>755</filemode>
+	      <username>root</username>
+	      <groupname>root</groupname>
+	      <directoryIncluded>false</directoryIncluded>
+	      <sources>
+		<source>
+		  <location>${basedir}/target/dependency/bin</location>
+		</source>
+	      </sources>
+	    </mapping>
+	    
+	    <mapping>
+	      <directory>${init.d.dir}</directory>
+	      <filemode>755</filemode>
+	      <username>root</username>
+	      <groupname>root</groupname>
+	      <directoryIncluded>false</directoryIncluded>
+	      <sources>
+		<source>
+		  <location>${basedir}/target/dependency/etc/init.d</location>
+		</source>
+	      </sources>
+	    </mapping>
+
+            <mapping>
+              <directory>${etc.dir}</directory>
+              <filemode>644</filemode>
+              <username>root</username>
+              <groupname>root</groupname>
+              <directoryIncluded>false</directoryIncluded>
+              <configuration>noreplace</configuration>
+              <sources>
+                <source>
+                  <location>${basedir}/target/dependency/etc/stratuslab</location>
+                </source>
+              </sources>
+            </mapping>
+
+	  </mappings>
+	</configuration>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

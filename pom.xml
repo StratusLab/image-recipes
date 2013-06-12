@@ -1,41 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>image-parent</artifactId>
-  <version>2.6-SNAPSHOT</version>
+  <version>13.05.0.RC2-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <name>Image Recipes (ROOT POM)</name>
 
-  <url>http://hudson.stratuslab.eu/images</url>
+  <url>https://github.com/StratusLab</url>
 
   <description>
-Image recipes
-</description>
-
-  <packaging>pom</packaging>
+    Recipes for creating base StratusLab images.  Also contains the
+    package for contextualizing images.
+  </description>
 
   <parent>
     <groupId>eu.stratuslab</groupId>
     <artifactId>distribution</artifactId>
-    <version>2.1</version>
+    <version>13.05.0.RC1</version>
   </parent>
 
   <modules>
+    <module>contextualization</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>build-rpm</id>
-      <activation>
-        <file>
-          <exists>/usr/bin/rpmbuild</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>contextualization</module>
-      </modules>
-    </profile>
-  </profiles>
 
   <licenses>
     <license>
@@ -44,52 +32,14 @@ Image recipes
     </license>
   </licenses>
 
-  <organization>
-    <name>StratusLab</name>
-    <url>http://stratuslab.eu/</url>
-  </organization>
-
   <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.stratuslab.eu:8080/</url>
+    <system>GitHub</system>
+    <url>https://github.com/StratusLab/image-recipes/issues</url>
   </issueManagement>
-
-  <ciManagement>
-    <system>Hudson</system>
-    <url>http://hudson.stratuslab.eu:8080/</url>
-  </ciManagement>
 
   <scm>
     <connection>scm:git:ssh://git@github.com/StratusLab/image-recipes.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/StratusLab/image-recipes.git</developerConnection>
   </scm>
-
-  <repositories>
-
-    <repository>
-      <releases>
-	<enabled>true</enabled>
-      </releases>
-      <snapshots>
-	<enabled>false</enabled>
-      </snapshots>
-      <id>POMReleases</id>
-      <name>POM Releases</name>
-      <url>http://repo.stratuslab.eu:8081/content/repositories/releases</url>
-    </repository>
-
-    <repository>
-      <releases>
-	<enabled>false</enabled>
-      </releases>
-      <snapshots>
-	<enabled>true</enabled>
-      </snapshots>
-      <id>POMSnapshots</id>
-      <name>POM Snapshots</name>
-      <url>http://repo.stratuslab.eu:8081/content/repositories/snapshots</url>
-    </repository>
-
-  </repositories>
 
 </project>
