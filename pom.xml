@@ -25,6 +25,34 @@
     <module>contextualization</module>
   </modules>
 
+  <repositories>
+
+    <repository>
+      <releases>
+	<enabled>true</enabled>
+      </releases>
+      <snapshots>
+	<enabled>false</enabled>
+      </snapshots>
+      <id>POMReleases</id>
+      <name>POM Releases</name>
+      <url>http://repo.stratuslab.eu:8081/content/repositories/releases</url>
+    </repository>
+
+    <repository>
+      <releases>
+	<enabled>false</enabled>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+      </snapshots>
+      <id>POMSnapshots</id>
+      <name>POM Snapshots</name>
+      <url>http://repo.stratuslab.eu:8081/content/repositories/snapshots</url>
+    </repository>
+
+  </repositories>
+
   <licenses>
     <license>
       <name>Apache 2</name>
