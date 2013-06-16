@@ -148,7 +148,7 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
 				sed -i "/127.0.1.1/d" /target/etc/hosts ; \
 				sed -i "s/#timeout\ 60/timeout\ 5/"  /target/etc/dhcp/dhclient.conf ; \
 				sed -i "s/#retry\ 60/retry\ 2/"  /target/etc/dhcp/dhclient.conf; \
-                                sed -i "s/- default/- root/" /target/etc/cloud/cloud.cfg; \
-                                sed -i "s/disable_root: true/disable_root: false/" /target/etc/cloud/cloud.cfg; \				
-                                echo "mounts:">>/target/etc/cloud/cloud.cfg; \
+				sed -i "s/user: ubuntu/user: root/" /target/etc/cloud/cloud.cfg ; \
+				sed -i "s/disable_root: 1/disable_root: 0/" /target/etc/cloud/cloud.cfg; \
+				echo "mounts:">>/target/etc/cloud/cloud.cfg; \
 				echo "- [ swap, null ]">>/target/etc/cloud/cloud.cfg
