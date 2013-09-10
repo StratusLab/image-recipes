@@ -26,7 +26,7 @@
     
     <fileSet>
       <directory>${project.basedir}/src/main/scripts/etc</directory>
-      <outputDirectory>etc</outputDirectory>
+      <outputDirectory>etc/stratuslab</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
