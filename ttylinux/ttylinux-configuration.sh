@@ -31,7 +31,7 @@ mount /dev/hda1 /mnt
 
 
 # Remove the account "user" on the generated system.
-chroot /mnt /bin/deluser user 
+chroot /mnt /usr/sbin/deluser user 
 
 
 # Update the welcome files. 
