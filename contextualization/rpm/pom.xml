@@ -17,7 +17,7 @@
   <properties>
     <bin.dir>/usr/bin</bin.dir>
     <init.d.dir>/etc/init.d</init.d.dir>
-    <etc.dir>/etc</etc.dir>
+    <etc.dir>/etc/stratuslab</etc.dir>
  
     <maven.build.timestamp.format>yyyyMMdd.HHmmss</maven.build.timestamp.format>
     <RELEASE>0.${maven.build.timestamp}.${package.os}</RELEASE>
@@ -97,7 +97,7 @@ fi
 	      <directoryIncluded>false</directoryIncluded>
 	      <sources>
 		<source>
-		  <location>${basedir}/target/dependency/bin</location>
+		  <location>${basedir}/target/dependency/usr/bin</location>
 		</source>
 	      </sources>
 	    </mapping>
