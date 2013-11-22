@@ -10,7 +10,7 @@
 
   <parent>
     <groupId>eu.stratuslab.image</groupId>
-    <artifactId>image-parent</artifactId>
+    <artifactId>contextualization</artifactId>
     <version>13.12.0-SNAPSHOT</version>
   </parent>
   
