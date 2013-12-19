@@ -4,7 +4,7 @@
 
   <groupId>eu.stratuslab.image</groupId>
   <artifactId>image-parent</artifactId>
-  <version>13.12.0</version>
+  <version>13.12.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Image Recipes (ROOT POM)</name>
 
@@ -68,7 +68,7 @@
   <scm>
     <connection>scm:git:ssh://git@github.com/StratusLab/image-recipes.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/StratusLab/image-recipes.git</developerConnection>
-    <tag>image-parent-13.12.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
 </project>
