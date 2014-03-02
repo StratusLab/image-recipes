@@ -11,7 +11,7 @@
   <parent>
     <groupId>eu.stratuslab.image</groupId>
     <artifactId>contextualization</artifactId>
-    <version>14.02.0-SNAPSHOT</version>
+    <version>14.03.0-SNAPSHOT</version>
   </parent>
   
   <properties>
