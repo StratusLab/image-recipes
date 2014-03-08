@@ -11,7 +11,7 @@
   <parent>
     <groupId>eu.stratuslab.image</groupId>
     <artifactId>image-parent</artifactId>
-    <version>14.03.0</version>
+    <version>14.03.1-SNAPSHOT</version>
   </parent>
 
   <modules>
