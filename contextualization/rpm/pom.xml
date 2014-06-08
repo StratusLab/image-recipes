@@ -37,6 +37,14 @@
     <plugins>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <arguments>-DRELEASE=1</arguments>
+        </configuration>
+      </plugin>
+
+      <plugin>
 	<artifactId>maven-dependency-plugin</artifactId>
 
 	<executions>
