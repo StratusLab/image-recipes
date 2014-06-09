@@ -11,13 +11,17 @@ fi
 set -xe
 
 export OS=CentOS
-export OS_VERSION=6.3
+export OS_VERSION=6.5
+export MAJOR_VERSION=$(echo $OS_VERSION|cut -d. -f1)
 export OS_ARCH=x86_64
-export IMAGE_VERSION=1.0
+export IMAGE_VERSION=${IMAGE_VERSION:-1.0}
 export TYPE=base
 export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=centos
+
+AUTHOR="${AUTHOR:-hudson builder}"
+EMAIL="${EMAIL:-hudson.builder}"
 
 #clean from failed build
 sudo su - root -c "rm -rf /etc/libvirt/qemu/$NAME*"
@@ -41,6 +45,7 @@ sudo yum install -y --nogpg stratuslab-pdisk-host || true
 sudo rm -Rf /tmp/pkg-cache
 sudo mkdir -p /tmp/pkg-cache
 # Download the required packages.
+sudo yum install -y --nogpg yum-utils || true
 sudo yumdownloader --destdir=/tmp/pkg-cache stratuslab-cli-user stratuslab-cli-sysadmin
 # Force installation without dependencies.
 # Dependency on ldap is still needed.
@@ -48,9 +53,9 @@ sudo yum install -y python-ldap
 sudo rpm --install --nodeps --force /tmp/pkg-cache/*.rpm
 
 
-sudo su - root -c "cd $PWD ; stratus-build-metadata --disks-bus virtio --author=\"hudson builder\" --os=$OS --os-version=$OS_VERSION --os-arch=$OS_ARCH --image-version=$IMAGE_VERSION --comment=\"$OS  $OS_VERSION $TYPE image automatically created by hudson. Configured only with a root user. The firewall in the image is disabled, IPv6 is enabled, and SELinux disabled. Allows both standard StratusLab and cloud-init contextualization mechanisms. A swap volume is expected to be provided on /dev/vdb. \" --compression=gz $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
+sudo su - root -c "cd $PWD; stratus-build-metadata --disks-bus virtio --author=\"${AUTHOR}\" --os=$OS --os-version=$OS_VERSION --os-arch=$OS_ARCH --image-version=$IMAGE_VERSION --tag=\"$NAME-$MAJOR_VERSION\" --comment=\"$OS $OS_VERSION $TYPE image automatically created by ${AUTHOR}. Configured only with a root user. The firewall in the image is disabled, IPv6 is enabled, and SELinux disabled. Allows both standard StratusLab and cloud-init contextualization mechanisms. A swap volume is expected to be provided on /dev/vdb.\" --compression=gz $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
 
-sudo su - root -c "stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o $PWD/test.p12"
+sudo su - root -c "stratus-generate-p12 --common-name=\"${AUTHOR}\" --email=\"${EMAIL}@stratuslab.eu\" -o $PWD/test.p12"
 
 set +x
 cmd="stratus-upload-image --machine-image-origin --public --compress gz --marketplace-endpoint $MARKETPLACE_ENDPOINT --pdisk-endpoint $PDISK_ENDPOINT --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"

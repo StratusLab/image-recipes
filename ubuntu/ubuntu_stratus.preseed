@@ -134,7 +134,7 @@ d-i preseed/late_command string rm /target/etc/udev/rules.d/70-persistent-*.rule
 				echo "task" >> /target/etc/init/stratuslab-one-context.conf ; \
 				echo "console output" >> /target/etc/init/stratuslab-one-context.conf ; \
 				echo "exec /usr/bin/stratuslab-one-context" >> /target/etc/init/stratuslab-one-context.conf ; \
-				sed -i 's#exit\ 0$#/usr/bin/stratuslab-one-context#' /target/etc/rc.local ; \
+				sed -i '/exit [ ]*0/d' /target/etc/rc.local ; \
                                 echo "modprobe acpiphp" >> /target/etc/rc.local ; \
                                 echo "exit 0" >> /target/etc/rc.local ; \
 				echo "acpiphp" >> /target/etc/modules ; \

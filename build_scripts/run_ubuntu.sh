@@ -14,15 +14,18 @@ set -xe
 
 
 export OS=Ubuntu
-export OS_VERSION=12.04
+export OS_VERSION=14.04
+export MAJOR_VERSION=$OS_VERSION
 export OS_ARCH=x86_64
-export IMAGE_VERSION=1.0
+export IMAGE_VERSION=${IMAGE_VERSION:-1.0}
 export TYPE=base
 export IMAGE_SIZE=5
 export MAC_ADDRESS=0a:0a:86:9e:49:60
 export NAME=ubuntu
-export DIST=precise
+export DIST=trusty
 
+AUTHOR="${AUTHOR:-hudson builder}"
+EMAIL="${EMAIL:-hudson.builder}"
 
 #clean from failed build
 sudo su - root -c "rm -f /etc/libvirt/qemu/$NAME.xml"
@@ -40,9 +43,9 @@ done
 
 sudo su - root -c "yum install -y --nogpgcheck stratuslab-cli-user stratuslab-cli-sysadmin"
 
-sudo su - root -c "cd $PWD ; stratus-build-metadata --author=\"hudson builder\" --os=$OS --os-version=$OS_VERSION --os-arch=$OS_ARCH --image-version=$IMAGE_VERSION --comment=\"$OS  $OS_VERSION $TYPE image automatically created by hudson. Configured only with a root user. The firewall in the image is disabled, IPv6 is enabled, and SELinux disabled. Allows both standard StratusLab and cloud-init contextualization mechanisms. A swap volume is expected to be provided on /dev/sdb. \" --compression=gz $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
+sudo su - root -c "cd $PWD; stratus-build-metadata --author=\"${AUTHOR}\" --os=$OS --os-version=$OS_VERSION --os-arch=$OS_ARCH --image-version=$IMAGE_VERSION --tag=\"$NAME-$MAJOR_VERSION\" --comment=\"$OS $OS_VERSION $TYPE image automatically created by ${AUTHOR}. Configured only with a root user. The firewall in the image is disabled, IPv6 is enabled, and SELinux disabled. Allows both standard StratusLab and cloud-init contextualization mechanisms. A swap volume is expected to be provided on /dev/sdb.\" --compression=gz $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
 
-sudo su - root -c "stratus-generate-p12 --common-name=\"hudson builder\" --email=\"hudson.builder@stratuslab.eu\" -o $PWD/test.p12"
+sudo su - root -c "stratus-generate-p12 --common-name=\"${AUTHOR}\" --email=\"${EMAIL}@stratuslab.eu\" -o $PWD/test.p12"
 
 set +x
 cmd="stratus-upload-image --machine-image-origin --public --compress gz --marketplace-endpoint $MARKETPLACE_ENDPOINT --pdisk-endpoint $PDISK_ENDPOINT --p12-cert=test.p12 --p12-password=XYZXYZ $OS-$OS_VERSION-$OS_ARCH-$TYPE-$IMAGE_VERSION.img"
