@@ -1,0 +1,25 @@
+<template>
+<!--
+ <name>CC7 Server - x86_64</name>
+-->
+ <name>CC-7-Server-x86_64</name>
+ <description>CC7 Server - x86_64</description>
+ <os>
+  <name>RHEL-7</name>
+  <version>0</version>
+  <arch>x86_64</arch>
+  <install type='url'>
+	<url>http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/</url>
+  </install>
+ </os>
+ <disk>
+  <size>5</size>
+ </disk>
+<!--
+<commands>
+ <command name='passwd'>
+  passwd -d root
+ </command>
+</commands>
+-->
+</template>
