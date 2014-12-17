@@ -1,0 +1,15 @@
+<template>
+ <name>CentOS-6-Server-x86_64</name>
+ <description>CentOS 6 Server x86_64</description>
+ <os>
+  <name>CentOS-6</name>
+  <version>6</version>
+  <arch>x86_64</arch>
+  <install type='url'>
+	<url>http://mirror.centos.org/centos/6.6/os/x86_64/</url>
+  </install>
+ </os>
+ <disk>
+  <size>5</size>
+ </disk>
+</template>
