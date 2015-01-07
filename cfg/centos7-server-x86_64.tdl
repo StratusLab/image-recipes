@@ -2,7 +2,7 @@
  <name>CentOS-7-Server-x86_64</name>
  <description>CentOS 7 Server x86_64</description>
  <os>
-  <name>RHEL-7</name>
+  <name>CentOS-7</name>
   <version>0</version>
 <!--
   <version>7.0.1406</version>
