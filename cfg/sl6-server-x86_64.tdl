@@ -1,0 +1,18 @@
+<template>
+ <name>SL-6-Server-x86_64</name>
+ <description>SL 6 Server x86_64</description>
+ <os>
+  <name>SL-6</name>
+  <version>6</version>
+  <arch>x86_64</arch>
+  <install type='url'>
+<url>http://mirrors.ircam.fr/pub/scientificlinux/scientific/6x/x86_64/os/</url>
+<!--
+<url>http://ftp.scientificlinux.org/linux/scientific/6x/x86_64/os/</url>
+-->
+  </install>
+ </os>
+ <disk>
+  <size>5G</size>
+ </disk>
+</template>
