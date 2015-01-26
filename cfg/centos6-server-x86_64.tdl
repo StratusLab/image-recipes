@@ -6,7 +6,7 @@
   <version>6</version>
   <arch>x86_64</arch>
   <install type='url'>
-	<url>http://mirror.centos.org/centos/6.6/os/x86_64/</url>
+	<url>http://mirror.centos.org/centos/6/os/x86_64/</url>
   </install>
  </os>
  <disk>

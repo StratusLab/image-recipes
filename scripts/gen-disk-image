@@ -1,0 +1,89 @@
+#! /bin/sh
+
+doc='Usage: '"$(basename $0)"' [OPTION]... <tdl-file>
+Generate operating system disk image with Oz tools.
+
+  -b                   do not visualise operating system installation process, i.e., batch mode
+  -h                   display this help and exit
+  -v                   output version information and exit
+'
+__version__='0.1.0'
+
+view=yes
+while getopts "bhv" opt; do
+    case $opt in
+	b) unset view ;;
+	h) echo "$doc"
+	    exit 0 ;;
+	v) printf '%s %s\n' "$(basename $0)" "$__version__"
+	    exit 0 ;;
+	?) echo "$doc"
+	    exit 2 ;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+[ $# -eq 1 ] || { echo "One argument must be provided" >&2; exit 1; }
+distro=${1%.tdl}
+suffix=${1#${distro}}
+[ .tdl = "$suffix" ] || { echo "Argument must be <tdl-file> (with .tdl suffix)" >&2; exit 1; }
+
+config=$(dirname $1)/oz.cfg
+[ -f "${config}" ] || { unset config; echo "Using default Oz configuration"; }
+if [ -f ${distro}.cfg ]; then
+    auto=${distro}.cfg
+elif [ -f ${distro}.auto ]; then
+    auto=${distro}.auto
+else
+    unset auto
+    echo "Using default Oz auto-installation file"
+fi
+
+mac_address=0a:0a:86:9e:49:60
+
+set -e
+name=$(python -c "import oz.TDL
+print oz.TDL.TDL(open('$1', 'r').read()).name
+")
+if [ -n "${view-}" ]; then
+    virt-viewer --wait --reconnect "${name}" &
+fi
+
+diskimage="$PWD/${name}".dsk
+set -x
+oz-install -m ${mac_address} -d 3 -t 3600 -p ${config:+-c "${config}"} -x "${name}".xml -s "$diskimage" ${auto:+-a "${auto}"} -u "$1"
+
+# Save installation log files
+logexists=$(guestfish --ro -i -a "$diskimage" <<EOF
+exists /var/log/anaconda
+EOF
+)
+if [ $logexists = true ]; then
+guestfish --ro -i -a "$diskimage" <<EOF
+-tar-out /var/log/anaconda anaconda-"${name}".bz2 compress:bzip2
+EOF
+else
+logexists=$(guestfish --ro -i -a "$diskimage" <<EOF
+exists /var/log/installer
+EOF
+)
+if [ $logexists = true ]; then
+guestfish --ro -i -a "$diskimage" <<EOF
+-tar-out /var/log/installer installer-"${name}".bz2 compress:bzip2
+EOF
+else
+guestfish --ro -i -a "$diskimage" <<EOF
+-glob ll /var/log/anaconda.* | cat >anaconda.files-"${name}".txt
+-glob cat /var/log/anaconda.* | bzip2 >anaconda.files-"${name}".bz2
+EOF
+fi
+fi
+
+virt-sysprep -a "$diskimage"
+guestfish --rw -i -a "$diskimage" <<EOF
+-rm-f /var/log/tuned/tuned.log
+-rm-rf /var/log/anaconda
+-rm-f /var/log/anaconda.syslog
+-ln-s /dev/null /etc/udev/rules.d/70-persistent-net.rules
+-rm-rf /var/log/installer
+EOF
