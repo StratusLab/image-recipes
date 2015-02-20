@@ -7,7 +7,7 @@ Generate operating system disk image with Oz tools.
   -h                   display this help and exit
   -v                   output version information and exit
 '
-__version__='0.1.0'
+__version__='0.2.0'
 
 view=yes
 while getopts "bhv" opt; do
@@ -24,16 +24,18 @@ done
 shift $(($OPTIND - 1))
 
 [ $# -eq 1 ] || { echo "One argument must be provided" >&2; exit 1; }
-distro=${1%.tdl}
-suffix=${1#${distro}}
+tdln="$(basename "$1")"
+distro="${tdln%.tdl}"
+suffix="${tdln#${distro}}"
 [ .tdl = "$suffix" ] || { echo "Argument must be <tdl-file> (with .tdl suffix)" >&2; exit 1; }
 
-config=$(dirname $1)/oz.cfg
+cfgdir="$(dirname "$1")"
+config="${cfgdir}"/oz.cfg
 [ -f "${config}" ] || { unset config; echo "Using default Oz configuration"; }
-if [ -f ${distro}.cfg ]; then
-    auto=${distro}.cfg
-elif [ -f ${distro}.auto ]; then
-    auto=${distro}.auto
+if [ -f "${cfgdir}/${distro}".cfg ]; then
+    auto="${cfgdir}/${distro}".cfg
+elif [ -f "${cfgdir}/${distro}".auto ]; then
+    auto="${cfgdir}/${distro}".auto
 else
     unset auto
     echo "Using default Oz auto-installation file"
@@ -42,9 +44,9 @@ fi
 mac_address=0a:0a:86:9e:49:60
 
 set -e
-name=$(python -c "import oz.TDL
-print oz.TDL.TDL(open('$1', 'r').read()).name
-")
+name="$(python -c 'import oz.TDL
+print oz.TDL.TDL(open("'"$1"'", "'"r"'").read()).name
+')"
 if [ -n "${view-}" ]; then
     virt-viewer --wait --reconnect "${name}" &
 fi
@@ -60,7 +62,7 @@ EOF
 )
 if [ $logexists = true ]; then
 guestfish --ro -i -a "$diskimage" <<EOF
--tar-out /var/log/anaconda anaconda-"${name}".bz2 compress:bzip2
+-tar-out /var/log/anaconda anaconda-${name}.tar.bz2 compress:bzip2
 EOF
 else
 logexists=$(guestfish --ro -i -a "$diskimage" <<EOF
@@ -69,7 +71,7 @@ EOF
 )
 if [ $logexists = true ]; then
 guestfish --ro -i -a "$diskimage" <<EOF
--tar-out /var/log/installer installer-"${name}".bz2 compress:bzip2
+-tar-out /var/log/installer installer-${name}.tar.bz2 compress:bzip2
 EOF
 else
 guestfish --ro -i -a "$diskimage" <<EOF
